@@ -1,7 +1,7 @@
-from PySide2.QtWidgets import  *
+from PySide2.QtWidgets import *
 from PySide2.QtUiTools import *
 from PySide2.QtCore import *
-from PySide2 import QtGui,QtCore,QtWidgets
+from PySide2 import QtGui, QtCore, QtWidgets
 from PySide2.QtGui import *
 from moviepy.editor import VideoFileClip
 import threading
@@ -26,13 +26,15 @@ plugin_path = os.path.join(dirname, 'plugins', 'platforms')
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
 os.environ['PYTHON_EXE'] = sys.executable
 
-
 class status():
     def __init__(self):
         # self.handleCalc()
         #正常情况下应该是先跳转到主页menu，现在主页还没完善好，因此先跳转到行人单目标检测
         self.id_num=0
         self.handleCalc()
+        # note: 添加环境变量
+        self.file_path = []
+        self.video_path = []
 
     def show_ui(self,location):
         loca="ui/"+location
@@ -136,14 +138,14 @@ class status():
                              , self.ui.widget_7
                              , self.ui.widget_8)
         test_video=r"C:\Users\Administrator\Desktop\university\d4199e42f744cbe3be7f5ac262cd9056.mp4"
-        label1=MyMenuVideoLabel("source/second/menu_car.PNG"
-                                ,360,184,320,180
-                                ,test_video
-                                ,self.ui)
-        label2=MyMenuVideoLabel("source/second/menu_pedestrian.PNG"
-                                ,800,184,320,180
-                                ,test_video
-                                ,self.ui)
+        label1=MyMenuVideoLabel("source/second/menu_pedestrian.PNG"
+                                , 360, 184, 320, 180
+                                , test_video
+                                , self.ui)
+        label2=MyMenuVideoLabel("source/second/menu_car.PNG"
+                                , 800, 184, 320, 180
+                                , test_video
+                                , self.ui)
 
         label3 = MyMenuVideoLabel("source/second/menu_muti_object.PNG"
                                   , 1240, 184, 320, 180
@@ -278,13 +280,13 @@ class status():
 
     def car_double_photo(self):
         self.page_id = 6
-        self.universe_for_double("car_double_photo.ui"
-                                 ,"car_double_photo_working.ui")
+        self.universe_for_double("car_double_photo.ui",
+                                 "car_double_photo_working.ui")
         self.come_back = self.car_menu
         self.is_draw_line = ''
         self.ui.pushButton_13.clicked.connect(self.come_back)
 
-    def universe_for_double(self,first_ui,next_ui):
+    def universe_for_double(self, first_ui, next_ui):
         self.show_ui(first_ui)
         self.help_set_shadow(0, 0, 50, QColor(0, 0, 0, 0.06 * 255)
                              , self.ui.widget_2)
@@ -304,12 +306,13 @@ class status():
         self.progressPos = 0.0
         self.ui.show()
 
-    def universe_for_one_small(self
-                               ,first_ui
-                               ,not_enter_ui
-                               ,is_enter_ui):
+    def universe_for_one_small(self,
+                               first_ui,
+                               not_enter_ui,
+                               is_enter_ui):
         self.show_ui(first_ui)
         self.file_path = []
+        self.video_path = []
         self.is_draw_line = ''
         # 先设置shadow
         self.have_show_video=1
@@ -335,7 +338,6 @@ class status():
         self.show_ui("mult_one_photo.ui")
         self.help_set_shadow(0, 0, 50, QColor(0, 0, 0, 0.06 * 255)
                              , self.ui.widget_2)
-        self.ui.show()
         self.come_back = self.mult_menu
         self.have_show_video = 1
         self.ui.pushButton_addVideo.clicked.connect(
@@ -347,6 +349,7 @@ class status():
         self.confi = 0.5
         self.time = 0
         self.progressPos = 0.00
+        self.ui.show()
 
 
     def mult_small_object(self):
@@ -358,11 +361,12 @@ class status():
         self.come_back = self.mult_menu
         self.have_show_video = 1
         self.ui.pushButton_addVideo.clicked.connect(
-            lambda :self.load_video1(self.ui.pushButton_addVideo
+            lambda: self.load_video1(self.ui.pushButton_addVideo
                                      , self.ui.label_24)
         )
         self.ui.pushButton_13.clicked.connect(self.come_back)
-        self.not_enter_ui = "mult_one_photo_working.ui"
+        # note：初始时加载的界面错了，此处做了调整
+        self.not_enter_ui = "mult_small_object_working.ui"
         self.confi = 0.5
         self.time = 0
         self.progressPos = 0.00
@@ -377,7 +381,7 @@ class status():
         3.将暂停键之类的各种键配置好
         :return:
         """
-        result=[]
+        result = []
         result.append(self.lineEditConfi.text())
         result.append(self.ui.lineEdit_2.text())
         print(self.ui.lineEdit_2.text())
@@ -390,9 +394,19 @@ class status():
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
         self.lineEditConfi.setText("0.5")
         self.ui.lineEdit_2.setText(result[1])
-        pic = QPixmap('source/second/loading.png')
-        self.ui.label_7.setPixmap(pic)
-        self.ui.label_7.setScaledContents(True)
+        # note:无法选择按钮暂时变灰
+        self.ui.pushButton_2.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+        self.ui.pushButton_3.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+        # note:改为显示第一张图片
+        # pic = QPixmap('source/second/loading.png')
+        # self.ui.label_7.setPixmap(pic)
+        # self.ui.label_7.setScaledContents(True)
+        self.cap4 = cv2.VideoCapture(self.video_path[0])
+        ret, frame = self.cap4.read()
+        self.have_show_time = 0
+        self.Display_Image(frame, self.ui.label_7)
         self.is_enter_surely = 1
         self.load_video_controller()
         self.load_control_for_one_photo()
@@ -410,13 +424,36 @@ class status():
         self.help_set_shadow(0, 0, 50, QColor(0, 0, 0, 0.06 * 255)
                              , self.ui.widget_2)
 
-        if self.have_show_video==2:
+        if self.have_show_video == 2:
             self.listWidget = QListWidget(self.ui)
             self.listWidget.setStyleSheet("""QListWidget{border:0px;}QListWidget:item{margin:10px 0px 10px 0px;}""")
             self.listWidget.move(1322, 358 + 16 + 36)
             self.listWidget.resize(370, 540 - 16 - 40)
 
         self.ui.pushButton_13.clicked.connect(self.come_back)
+
+        # note:无法选择按钮暂时变灰
+        self.ui.pushButton_2.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+        self.ui.pushButton_3.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+
+        # note: 添加双镜头显示视频图片：
+        if(len(self.video_path)==2):
+            self.cap4 = cv2.VideoCapture(self.video_path[0])
+            ret, frame = self.cap4.read()
+            self.have_show_time = 0
+            self.Display_Image(frame, self.ui.label_7)
+            self.cap5 = cv2.VideoCapture(self.video_path[1])
+            ret, frame = self.cap5.read()
+            self.have_show_time = 0
+            self.Display_Image(frame, self.ui.label_14)
+        elif(len(self.video_path)==1):
+            self.cap4 = cv2.VideoCapture(self.video_path[0])
+            ret, frame = self.cap4.read()
+            self.have_show_time = 0
+            self.Display_Image(frame, self.ui.label_7)
+
         self.ui.show()
 
     def init_base_ui_for_one_photo_changing_enter(self,ui_location):
@@ -427,14 +464,26 @@ class status():
         s = """QPushButton{\nwidth: 126px;\nheight: 44px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #4E4EF2;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #4E4EF2;\nline-height: 26px;\nfont-weight:bold;\n}"""
         self.output_txt = MyPushButton(self.ui.label_txt_tip, s
                                        , "导出文件", 1507.5, 290, 126, 44, self.ui)
-        self.ui.show()
         self.help_set_shadow(0, 4, 0, QColor(221, 221, 221, 0.3 * 255)
                              , self.ui.label_3)
         self.help_set_shadow(0, 0, 50, QColor(221, 221, 221, 0.3 * 255)
                              , self.ui.widget_2, self.ui.widget_3)
+        # note:无法选择按钮暂时变灰
+        self.ui.pushButton_2.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+        self.ui.pushButton_3.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
 
         self.ui.pushButton_10.clicked.connect(self.one_photo_change_enter)
         self.ui.pushButton_13.clicked.connect(self.come_back)
+
+        # note：添加显示视频图片
+        self.cap3 = cv2.VideoCapture(self.video_path[0])
+        ret, frame = self.cap3.read()
+        self.have_show_time = 0
+        self.Display_Image(frame, self.ui.label_7)
+
+        self.ui.show()
 
     def load_control_for_double_photo(self):
         self.help_set_spinBox(self.lineEditConfi, self.ui.pushButton_7
@@ -463,7 +512,7 @@ class status():
                                , self.ui.label_progressBar_num)
         return
 
-    def load_video(self,control_hide,control_label):
+    def load_video(self, control_hide, control_label):
         """
         :param video_count: 要导入视频的数量，单镜头是1，跨境是2
         :return:
@@ -475,6 +524,9 @@ class status():
         if filePath == "":
             return
         self.file_path.append(filePath)
+        # note:
+        self.video_path.append(filePath)
+
         if len(self.file_path) < self.have_show_video:
             return
         # 数量对不上就return，说明没有给够
@@ -491,17 +543,16 @@ class status():
         self.file_path[0] = 'output/' + file_temp_split_path[0].split('/')[-1] + '.mp4'
         print(self.file_path[0])
 
-        pic = QPixmap('source/second/loading.png')
-        self.ui.label_7.setPixmap(pic)
-        self.ui.label_7.setScaledContents(True)
         if self.page_id == 7:
             pic = QPixmap('source/second/mul_one.png')
             self.ui.label_9.setPixmap(pic)
             self.ui.label_9.setScaledContents(True)
         elif self.page_id == 8:
-            pic = QPixmap('gui/source/second/small_mul.png')
+            # note：初始时路径错了
+            pic = QPixmap('source/second/small_mul.png')
             self.ui.label_9.setPixmap(pic)
             self.ui.label_9.setScaledContents(True)
+
         self.open_video()
 
     def load_model(self):
@@ -515,48 +566,54 @@ class status():
             (self.ui.label_23.width(), self.ui.label_23.height())
         self.ui.label_time.setText(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         starttime = datetime.datetime.now()
-        #判断是行人模型还是车辆模型
-        print("*******************************************************")
-        print(self.confi)
-        # draw_center_traj
-        print(self.is_draw_line)
-        print(self.is_tracking)
-        print("lzclzclzclzclzclzc")
-        self.ui.label_progressBar_num.setText("运行中")
-        python_exe = os.environ['PYTHON_EXE']
-        if self.page_id == 1:
-            print("当前是行人模型")
-            val = os.system(
-                '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320 --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
-        elif self.page_id == 2:
-            print("当前是车辆模型")
-            val = os.system(
-                '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
-        elif self.page_id == 3:
-            print("当前是行人小目标跟踪模型")
-            val = os.system(
-                '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
-        elif self.page_id == 5:
-            print("当前是车辆小目标跟踪模型")
-            val = os.system(
-                '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
-        elif self.page_id == 7:
-            val = os.system(
-                '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
-        else:
-            val = os.system(
-                '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+        # note：添加异常捕获
+        try:
+            #判断是行人模型还是车辆模型
+            print("*******************************************************")
+            print(self.confi)
+            # draw_center_traj
+            print(self.is_draw_line)
+            print(self.is_tracking)
+            print("lzclzclzclzclzclzc")
+            self.ui.label_progressBar_num.setText("运行中")
+            python_exe = os.environ['PYTHON_EXE']
+            if self.page_id == 1:
+                print("当前是行人模型")
+                val = os.system(
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320 --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+            elif self.page_id == 2:
+                print("当前是车辆模型")
+                val = os.system(
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+            elif self.page_id == 3:
+                print("当前是行人小目标跟踪模型")
+                val = os.system(
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+            elif self.page_id == 5:
+                print("当前是车辆小目标跟踪模型")
+                val = os.system(
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+            elif self.page_id == 7:
+                val = os.system(
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+            else:
+                val = os.system(
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+        except Exception as e:
+            print(e)  # 打印所有异常到屏幕
+
         endtime = datetime.datetime.now()
         starttime_count = starttime.hour * 3600 + starttime.minute * 60 + starttime.second
         endtime_count = endtime.hour * 3600 + endtime.minute * 60 + endtime.second
         self.final_time = str(endtime_count - starttime_count)
         self.ui.label_28.setText(str((endtime_count - starttime_count)))
+
         pic = QPixmap('source/second/model_ok.png')
         self.ui.label_7.setPixmap(pic)
         self.ui.label_7.setScaledContents(True)
@@ -573,6 +630,14 @@ class status():
             self.read_enter_txt_file()
         # self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
 
+        # note：运行结束重新把按钮由灰变蓝
+        self.ui.pushButton_2.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
+        self.ui.pushButton_3.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
+        # 支持结果显示按钮选择
+        self.ui.pushButton_2.clicked.connect(self.video_start)
+        self.ui.pushButton_3.clicked.connect(self.video_stop)
 
     def load_model_mult(self):
         print(self.file_name)
@@ -616,6 +681,12 @@ class status():
         self.ui.label_progressBar_num.setText("检测完成")
         # self.ui.label_17.setText("运行时间" + str((endtime_count - starttime_count)) /
         #                          +"运行FPS" + str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
+
+        # note：运行结束重新把按钮由灰变蓝
+        self.ui.pushButton_2.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
+        self.ui.pushButton_3.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
 
     def read_enter_txt_file(self):
         self.ui.label_26.setText(str(self.final_time))
@@ -782,8 +853,9 @@ class status():
 
     def load_video_controller(self):
         self.ui.pushButton.clicked.connect(self.video_pause)
-        self.ui.pushButton_2.clicked.connect(self.video_start)
-        self.ui.pushButton_3.clicked.connect(self.video_stop)
+        # note: 进行调整，必须模型运行后才可以点击结果显示按钮
+        # self.ui.pushButton_2.clicked.connect(self.video_start)
+        # self.ui.pushButton_3.clicked.connect(self.video_stop)
         self.ui.pushButton_4.clicked.connect(self.tracking_is)
 
     def tracking_is(self):
@@ -822,10 +894,23 @@ class status():
             self.timer_camera2.timeout.connect(self.OpenFrame2)
 
     def video_pause(self):
+        # note：运行后显示运行中
+        pic = QPixmap('source/second/loading.png')
+        self.ui.label_7.setPixmap(pic)
+        self.ui.label_7.setScaledContents(True)
         # self.timer_camera1.stop()
         # if self.have_show_video == 2:
         #     self.timer_camera2.stop()
-        self.ui.pushButton.setStyleSheet("QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+
+        self.ui.pushButton.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+
+        # note：模型运行中，结果显示和停止运行按钮暂时变灰
+        self.ui.pushButton_2.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+        self.ui.pushButton_3.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
+
         if self.page_id == 8 or self.page_id == 7:
             self.t1 = threading.Thread(target=self.load_model_mult)
             self.t1.start()
@@ -855,15 +940,21 @@ class status():
 
 
     def clear_video(self):
-        self.file_path=[]
+        self.file_path = []
+        self.video_path = []
         if self.have_show_video==1 or self.have_show_video==2:
-            if hasattr(self,"cap1")==False:return
-            if self.timer_camera1==[]:return
+            if hasattr(self,"cap1") == False:return
+            if self.timer_camera1 == []:return
+            # note:添加空判定
+            if self.timer_camera1 is None:return
             self.timer_camera1.stop()
-            self.cap1.release()
+            # note:暂时注释掉改行
+            # self.cap1.release()
             self.timer_camera1=None
             self.cap1=None
         if self.have_show_video==2:
+            # note:添加空判定
+            if self.timer_camera2 is None: return
             self.timer_camera2.stop()
             self.cap2.release()
             self.timer_camera2 = None
@@ -972,7 +1063,8 @@ class status():
         if type == 1:
             return "图片类型 (*.png *.jpg *.bmp)"
         else:
-            return "视频类型 (*.mp3 *.mp4 *.flac)"
+            # note:添加支持选择更多视频及文件格式
+            return "视频类型 (*.mp4 *.avi *.mov *.rmvb *.flac)"
 
     """
     ------------------------------打开单个文件的函数
