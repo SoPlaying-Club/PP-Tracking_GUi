@@ -32,9 +32,9 @@ class status():
         #正常情况下应该是先跳转到主页menu，现在主页还没完善好，因此先跳转到行人单目标检测
         self.id_num=0
         self.handleCalc()
-        # note: 添加环境变量
-        self.file_path = []
-        self.video_path = []
+        # note: 添加变量
+        self.file_path = []  # 用于保存结果文件
+        self.video_path = [] # 用于保存选择的视频路径
 
     def show_ui(self,location):
         loca="ui/"+location
@@ -118,8 +118,6 @@ class status():
         progress.resize(int(self.progressPos*len),progress.height())
 
 
-
-
     def handleCalc(self):
         self.show_ui("main_menu.ui")
         self.have_show_video = 0
@@ -155,6 +153,7 @@ class status():
         self.ui.pushButton.clicked.connect(self.pedestrian_menu)
         self.ui.pushButton_2.clicked.connect(self.car_menu)
         self.ui.pushButton_3.clicked.connect(self.mult_menu)
+
     def load_son_menu(self,menu_ui,id):
         # 后面完善的话还要传入那些video和video的一开始的图片
         self.clear_video()
@@ -635,7 +634,7 @@ class status():
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
         self.ui.pushButton_3.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
-        # 支持结果显示按钮选择
+        # note: 按钮可选后为按钮绑定功能函数
         self.ui.pushButton_2.clicked.connect(self.video_start)
         self.ui.pushButton_3.clicked.connect(self.video_stop)
 
@@ -650,22 +649,27 @@ class status():
             (self.ui.label_23.width(), self.ui.label_23.height())
         self.ui.label_time.setText(str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         starttime = datetime.datetime.now()
-        # 判断是行人模型还是车辆模型
-        print("*******************************************************")
-        print(self.confi)
-        # draw_center_traj
-        print(self.is_draw_line)
-        print(self.is_tracking)
-        print("lzclzclzclzclzclzc")
-        self.ui.label_progressBar_num.setText("运行中")
-        if self.page_id == 7:
-            val = os.system(
-                'python deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (self.file_name, self.confi, self.is_tracking, self.is_draw_line))
-        else:
-            val = os.system(
-                'python deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                % (self.file_name, self.confi, self.is_tracking, self.is_draw_line))
+        # note: 添加异常捕获
+        try:
+            # 判断是行人模型还是车辆模型
+            print("*******************************************************")
+            print(self.confi)
+            # draw_center_traj
+            print(self.is_draw_line)
+            print(self.is_tracking)
+            print("lzclzclzclzclzclzc")
+            self.ui.label_progressBar_num.setText("运行中")
+            if self.page_id == 7:
+                val = os.system(
+                    'python deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (self.file_name, self.confi, self.is_tracking, self.is_draw_line))
+            else:
+                val = os.system(
+                    'python deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
+                    % (self.file_name, self.confi, self.is_tracking, self.is_draw_line))
+        except Exception as e:
+            print(e)  # 打印所有异常到屏幕
+
         endtime = datetime.datetime.now()
         starttime_count = starttime.hour * 3600 + starttime.minute * 60 + starttime.second
         endtime_count = endtime.hour * 3600 + endtime.minute * 60 + endtime.second
@@ -687,6 +691,9 @@ class status():
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
         self.ui.pushButton_3.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}")
+        # note: 按钮可选后为按钮绑定功能函数
+        self.ui.pushButton_2.clicked.connect(self.video_start)
+        self.ui.pushButton_3.clicked.connect(self.video_stop)
 
     def read_enter_txt_file(self):
         self.ui.label_26.setText(str(self.final_time))
