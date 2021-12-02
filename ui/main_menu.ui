@@ -734,6 +734,11 @@ border: 1px solid rgba(221, 221, 221, 0.3);
        <height>180</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+background: rgba(255, 155, 0, 51);
+}</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -878,6 +883,11 @@ border: 1px solid rgba(221, 221, 221, 0.3);
        <width>320</width>
        <height>180</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+background: rgba(255, 155, 0, 51);
+}</string>
      </property>
      <property name="text">
       <string/>
