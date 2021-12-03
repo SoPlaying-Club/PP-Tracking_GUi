@@ -19,6 +19,7 @@ import sys
 # note:
 import os  # os是用来切换路径和创建文件夹的
 import shutil #shutil 是用来复制黏贴文件的
+from decimal import Decimal
 
 matplotlib.use('agg')
 sys.path.append('deploy')
@@ -43,8 +44,9 @@ class status():
         self.final_time = 0
         self.txt_output_path = ''
         self.video_output_path = ''
+        # self.is_enter = False
 
-    def show_ui(self,location):
+    def show_ui(self, location):
         loca="ui/"+location
         qfile_staus = QFile(loca)
         qfile_staus.open(QFile.ReadOnly)
@@ -78,33 +80,35 @@ class status():
         for x in control:
             x.raise_()
 
-    def help_set_edit(self, edit,one):
+    def help_set_edit(self, edit, one):
         if one == 1 or one == -1:
-            self.time=self.time+one
-            if self.time>999:self.time=999
+            self.time = self.time+one
+            if self.time>999: self.time=999
             if self.time<0: self.time=0
             edit.setText(str(self.time))
         else:
-            self.confi=int(self.confi*100+one*100)
-            self.confi=float(self.confi/100.0)
+            # self.confi = float(float(self.confi) + float(one))
+            self.confi = Decimal(str(self.confi)) + Decimal(str(one))
+            self.confi = Decimal(self.confi).quantize(Decimal("0.00"))
             if self.confi > 1.0: self.confi = 1.0
             if self.confi < 0.0: self.confi = 0.0
             edit.setText(str(self.confi))
 
     def help_set_edit_by_hand(self, edit, one):
         if one == 1:
-            self.time=int(edit.text())
-            now=int(edit.text())
-            if self.time>999:self.time = 999
-            if self.time<0:self.time = 0
-            if now != self.time:edit.setText(str(self.time))
+            self.time = int(edit.text())
+            now = int(edit.text())
+            if self.time>999: self.time = 999
+            if self.time<0: self.time = 0
+            if now != self.time: edit.setText(str(self.time))
         else:
-            self.confi = int(float(edit.text())*100)
-            self.confi = float(self.confi / 100.0)
-            now = float(edit.text())
+            self.confi = int(Decimal(str(edit.text())) * 100)
+            self.confi = Decimal(str(self.confi / 100.0))
+            now = Decimal(str(edit.text()))
             if self.confi > 1.0: self.confi = 1.0
             if self.confi < 0.0: self.confi = 0.0
-            if now != self.confi:edit.setText(str(self.confi))
+            if now != self.confi:
+                edit.setText(str(self.confi))
 
     def help_set_spinBox(self, edit, add, down, one):
         edit.textChanged.connect(lambda: self.help_set_edit_by_hand(edit, one))
@@ -263,8 +267,8 @@ class status():
 
     def pedestrian_double_photo(self):
         self.page_id = 4
-        self.universe_for_double("pedestrian_double_photo.ui"
-                                 ,"pedestrian_double_photo_working.ui")
+        self.universe_for_double("pedestrian_double_photo.ui",
+                                 "pedestrian_double_photo_working.ui")
         self.come_back = self.pedestrian_menu
         self.is_draw_line = ''
         self.ui.pushButton_13.clicked.connect(self.come_back)
@@ -395,12 +399,16 @@ class status():
         result.append(self.ui.lineEdit_2.text())
         print(self.ui.lineEdit_2.text())
         self.is_draw_line = '--do_entrance_counting'
-        if self.is_enter==False:
+
+        if self.is_enter == False:
             self.is_enter = True
+            self.is_enter_surely = 1
             self.init_base_ui_for_one_photo_changing_enter(self.is_enter_ui)
-        else:
+        elif self.is_enter == True:
             self.is_enter = False
+            self.is_enter_surely = 0
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
+
         self.lineEditConfi.setText("0.5")
         self.ui.lineEdit_2.setText(result[1])
         # note:无法选择按钮暂时变灰
@@ -411,20 +419,20 @@ class status():
         self.ui.pushButton_8.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
 
-        # note:改为显示第一张图片
-        # pic = QPixmap('source/second/loading.png')
-        # self.ui.label_7.setPixmap(pic)
-        # self.ui.label_7.setScaledContents(True)
         self.cap4 = cv2.VideoCapture(self.video_path[0])
         ret, frame = self.cap4.read()
         self.have_show_time = 0
         self.Display_Image(frame, self.ui.label_7)
-        self.is_enter_surely = 1
+
+        # to do: 解决出入口界面的问题
+        # self.is_enter_surely = 1
+        print(self.is_enter_surely)
+
         self.load_video_controller()
         self.load_control_for_one_photo()
         return
 
-    def init_base_ui_for_double_photo(self,ui_location):
+    def init_base_ui_for_double_photo(self, ui_location):
         self.show_ui(ui_location)
         s = """QLineEdit{\nwidth: 80px;\nheight: 40px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\n\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #333333;\nline-height: 26px;\nfont-weight:bold;\n}"""
         self.lineEditConfi = MyLineEdit(self.ui.label_confi_tip, s
@@ -454,6 +462,7 @@ class status():
         # note:初始时隐藏当前视频帧数显示，点击结果显示按钮后才显示出来
         self.ui.label_22.setVisible(False)
         self.ui.label_frames.setVisible(False)
+        self.ui.show()
         # note: 添加双镜头显示视频图片：
         if(len(self.video_path)==2):
             self.cap4 = cv2.VideoCapture(self.video_path[0])
@@ -470,9 +479,9 @@ class status():
             self.have_show_time = 0
             self.Display_Image(frame, self.ui.label_7)
 
-        self.ui.show()
 
-    def init_base_ui_for_one_photo_changing_enter(self,ui_location):
+
+    def init_base_ui_for_one_photo_changing_enter(self, ui_location):
         self.show_ui(ui_location)
         s = """QLineEdit{\nwidth: 80px;\nheight: 40px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\n\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #333333;\nline-height: 26px;\nfont-weight:bold;\n}"""
         self.lineEditConfi = MyLineEdit(self.ui.label_confi_tip, s
@@ -497,13 +506,13 @@ class status():
         # note:初始时隐藏当前视频帧数显示，点击结果显示按钮后才显示出来
         self.ui.label_22.setVisible(False)
         self.ui.label_frames.setVisible(False)
+        self.ui.show()
         # note：添加显示视频图片
         self.cap3 = cv2.VideoCapture(self.video_path[0])
         ret, frame = self.cap3.read()
         self.have_show_time = 0
         self.Display_Image(frame, self.ui.label_7)
 
-        self.ui.show()
 
     def load_control_for_double_photo(self):
         self.help_set_spinBox(self.lineEditConfi, self.ui.pushButton_7
@@ -545,7 +554,7 @@ class status():
         if len(self.file_path) < self.have_show_video:
             return
         # 数量对不上就return，说明没有给够
-        if self.have_show_video == 1 and self.is_mult==False:
+        if self.have_show_video == 1 and self.is_mult == False:
             self.is_enter = False
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
         else:
@@ -588,10 +597,27 @@ class status():
             self.is_tracking = ''
         else:
             self.is_tracking = '--draw_center_traj'
+
         # 模型开始运行及运行完成后让按钮及复选框失效掉
+        self.ui.checkBox.setEnabled(False)  # 取消轨迹复选框
+        # 阈值调试失效
         self.ui.pushButton_7.setEnabled(False)
         self.ui.pushButton_11.setEnabled(False)
-        self.ui.checkBox.setEnabled(False)
+        self.lineEditConfi.setEnabled(False)
+        # 时段长度失效
+        self.ui.pushButton_5.setEnabled(False)
+        self.ui.pushButton_6.setEnabled(False)
+        self.ui.lineEdit_2.setEnabled(False)
+
+        # 让人流密度指标调整失效
+        if self.is_enter_surely == 0:
+            self.ui.lineEdit_3.setEnabled(False)
+
+        self.ui.pushButton_10.setEnabled(False)  # 让开关出入口失效
+
+        # 将开关出入口设置为灰色，表示不可选
+        self.ui.pushButton_10.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 40px;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-weight:bold;\nwidth: 80px;\nheight: 24px;\nfont-size: 16px;\nfont-family:\nAlibabaPuHuiTi_2_65_Medium;\nline-height: 24px;\ncolor: #888888;\n}")
 
         # note：添加异常捕获
         try:
@@ -640,10 +666,10 @@ class status():
         self.final_time = str(endtime_count - starttime_count)
         self.ui.label_28.setText(str((endtime_count - starttime_count)))
 
-
-        pic = QPixmap('source/second/model_ok.png')
-        self.ui.label_7.setPixmap(pic)
-        self.ui.label_7.setScaledContents(True)
+        # note: 优化FPS显示问题
+        self.cap1 = cv2.VideoCapture(self.file_path[0])
+        self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
+        # self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
 
         # self.synthesis_vide(val, self.file_name)
         if self.is_enter_surely == 0:
@@ -651,15 +677,24 @@ class status():
         else:
             self.read_enter_txt_file()
 
-        # self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
+        pic = QPixmap('source/second/model_ok.png')
+        self.ui.label_7.setPixmap(pic)
+        self.ui.label_7.setScaledContents(True)
 
-        # note: 按钮可选后为按钮绑定功能函数
-        self.ui.pushButton_2.clicked.connect(self.video_start)
-        self.ui.pushButton_3.clicked.connect(self.video_stop)
         # note：运行结束重新把按钮由灰变蓝
         self.ui.pushButton_2.setStyleSheet("QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(78, 78, 242, 204);\nborder-radius: 4px;\nopacity: 0.8;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF; \nline-height: 26px;\nfont-weight: bold;}")
         self.ui.pushButton_3.setStyleSheet("QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(78, 78, 242, 204);\nborder-radius: 4px;\nopacity: 0.8;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF; \nline-height: 26px;\nfont-weight: bold;}")
         self.ui.pushButton_8.setStyleSheet("QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(78, 78, 242, 204);\nborder-radius: 4px;\nopacity: 0.8;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF; \nline-height: 26px;\nfont-weight: bold;}")
+
+        # note: 运行结束后重新开放开启出入口功能
+        self.ui.pushButton_10.setStyleSheet(
+            "QPushButton{\nwidth: 120px;\nheight: 40px;\nborder-radius: 4px;\nborder: 1px solid #4E4EF2;\nfont-weight:bold;\nfont-size: 16px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #4E4EF2;\nline-height: 24px;\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #4E4EF2;\nfont-weight:bold;\nfont-size: 16px;\nfont-family:AlibabaPuHuiTi_2_65_Medium;\ncolor: #4E4EF2;\nline-height: 24px;\n}")
+        self.ui.pushButton_10.setEnabled(True)
+
+        # 模型运行结束后开放功能
+        self.ui.pushButton_2.setEnabled(True)  # 结果显示
+        self.ui.pushButton_3.setEnabled(True)  # 停止运行
+        self.ui.pushButton_8.setEnabled(True)  # 导出结果
 
     def load_model_mult(self):
         print(self.file_name)
@@ -676,10 +711,14 @@ class status():
             self.is_tracking = ''
         else:
             self.is_tracking = '--draw_center_traj'
+
         # 模型开始运行及运行完成后让按钮及复选框失效掉
+        self.ui.checkBox.setEnabled(False)  # 取消轨迹复选框
+        # 阈值调试失效
         self.ui.pushButton_7.setEnabled(False)
         self.ui.pushButton_11.setEnabled(False)
-        self.ui.checkBox.setEnabled(False)
+        self.lineEditConfi.setEnabled(False)
+
         # note: 添加异常捕获
         try:
             # 判断是行人模型还是车辆模型
@@ -703,6 +742,7 @@ class status():
         endtime = datetime.datetime.now()
         starttime_count = starttime.hour * 3600 + starttime.minute * 60 + starttime.second
         endtime_count = endtime.hour * 3600 + endtime.minute * 60 + endtime.second
+
         pic = QPixmap('source/second/model_ok.png')
         self.ui.label_7.setPixmap(pic)
         self.ui.label_7.setScaledContents(True)
@@ -710,9 +750,7 @@ class status():
         # self.synthesis_vide(val, self.file_name)
         # self.ui.label_17.setText("运行时间" + str((endtime_count - starttime_count)) /
         #                          +"运行FPS" + str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
-        # note: 按钮可选后为按钮绑定功能函数
-        self.ui.pushButton_2.clicked.connect(self.video_start)
-        self.ui.pushButton_3.clicked.connect(self.video_stop)
+
         # note：运行结束重新把按钮由灰变蓝
         self.ui.pushButton_2.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(78, 78, 242, 204);\nborder-radius: 4px;\nopacity: 0.8;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF; \nline-height: 26px;\nfont-weight: bold;}")
@@ -720,6 +758,11 @@ class status():
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(78, 78, 242, 204);\nborder-radius: 4px;\nopacity: 0.8;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF; \nline-height: 26px;\nfont-weight: bold;}")
         self.ui.pushButton_8.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #4E4EF2;;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF;\nline-height: 26px;\nfont-weight:bold\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(78, 78, 242, 204);\nborder-radius: 4px;\nopacity: 0.8;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #FFFFFF; \nline-height: 26px;\nfont-weight: bold;}")
+        # 模型运行结束后开放功能
+        self.ui.pushButton_2.setEnabled(True)  # 结果显示
+        self.ui.pushButton_3.setEnabled(True)  # 停止运行
+        self.ui.pushButton_8.setEnabled(True)  # 导出结果
+
 
     # note: 添加导出结果功能：选择输出文件夹，将结果文件拷贝到该路径下
     def output_result(self):
@@ -843,6 +886,9 @@ class status():
         # 当前的人数计数
         self.current_count = current_count_list_y[len(current_count_list_y) - 1]
         self.ui.label_30.setText(str(self.current_count))
+        # to do : 完善当前时段人流显示
+        self.ui.label_32.setText(str(self.current_count))
+        # to do: 完善人流密度标准显示
         f.close()
         # print(self.cap1[0])
         # frames_num = self.cap1.get(7)
