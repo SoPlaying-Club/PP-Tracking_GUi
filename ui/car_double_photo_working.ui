@@ -220,6 +220,9 @@ font-weight: bold;
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -274,6 +277,9 @@ font-weight: bold;
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -335,10 +341,13 @@ font-weight:bold;
 }</string>
      </property>
      <property name="text">
-      <string>阙值调试：</string>
+      <string>阈值调试：</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_8">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>480</x>
@@ -385,9 +394,9 @@ font-weight: bold;
     <widget class="QLabel" name="label_22">
      <property name="geometry">
       <rect>
-       <x>1180</x>
+       <x>1179</x>
        <y>40</y>
-       <width>89</width>
+       <width>101</width>
        <height>26</height>
       </rect>
      </property>
@@ -395,7 +404,7 @@ font-weight: bold;
       <string notr="true">QLabel{
 width: 89px;
 height: 26px;
-font-size: 18px;
+font-size: 20px;
 font-family: AlibabaPuHuiTi_2_65_Medium;
 color: #888888;
 line-height: 26px;
@@ -433,7 +442,7 @@ font-weight:bold
     <widget class="QLabel" name="label_frames">
      <property name="geometry">
       <rect>
-       <x>1269</x>
+       <x>1280</x>
        <y>40</y>
        <width>111</width>
        <height>26</height>
@@ -443,7 +452,7 @@ font-weight:bold
       <string notr="true">QLabel{
 width: 89px;
 height: 26px;
-font-size: 18px;
+font-size: 20px;
 font-family: AlibabaPuHuiTi_2_65_Medium;
 color: #888888;
 line-height: 26px;
@@ -570,7 +579,7 @@ padding:10px
 }</string>
      </property>
      <property name="text">
-      <string>请在导入视频前调试阈值；阈值默认值：0.5 </string>
+      <string>请在模型运行前调整阈值；阈值默认值：0.5 </string>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -647,9 +656,9 @@ border:0px;
      <property name="geometry">
       <rect>
        <x>310</x>
-       <y>670</y>
-       <width>151</width>
-       <height>51</height>
+       <y>679</y>
+       <width>31</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -663,6 +672,30 @@ border:0px;
       <string notr="true">QcheckBox {
 width: 110px;
 height: 40px;
+font-size: 24px;
+font-family: AlibabaPuHuiTi_2_65_Medium;
+color: #333333;
+line-height: 36px;
+font-weight:bold;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>680</y>
+       <width>121</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+width: 119px;
+height: 36px;
 font-size: 24px;
 font-family: AlibabaPuHuiTi_2_65_Medium;
 color: #333333;
@@ -691,6 +724,7 @@ font-weight:bold;
     <zorder>label_confi_tip</zorder>
     <zorder>widget_2</zorder>
     <zorder>checkBox</zorder>
+    <zorder>label_12</zorder>
    </widget>
    <widget class="QPushButton" name="pushButton_13">
     <property name="geometry">

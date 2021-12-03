@@ -277,7 +277,7 @@ font-weight:bold;
 }</string>
      </property>
      <property name="text">
-      <string>阙值调试：</string>
+      <string>阈值调试：</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -621,12 +621,15 @@ font-weight:bold;
      </property>
     </widget>
     <widget class="QCheckBox" name="checkBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>310</x>
-       <y>670</y>
-       <width>151</width>
-       <height>51</height>
+       <y>679</y>
+       <width>31</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -637,9 +640,25 @@ font-weight:bold;
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QcheckBox {
-width: 110px;
-height: 40px;
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>680</y>
+       <width>121</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+width: 119px;
+height: 36px;
 font-size: 24px;
 font-family: AlibabaPuHuiTi_2_65_Medium;
 color: #333333;
@@ -669,6 +688,7 @@ font-weight:bold;
     <zorder>pushButton_10</zorder>
     <zorder>label_16</zorder>
     <zorder>checkBox</zorder>
+    <zorder>label_12</zorder>
    </widget>
    <widget class="QPushButton" name="pushButton_13">
     <property name="geometry">

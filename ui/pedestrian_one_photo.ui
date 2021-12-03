@@ -160,10 +160,13 @@ font-weight:bold;
     </property>
    </widget>
    <widget class="QWidget" name="widget" native="true">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>168</x>
-      <y>248</y>
+      <x>170</x>
+      <y>260</y>
       <width>1584</width>
       <height>830</height>
      </rect>
@@ -278,6 +281,9 @@ border: 2px dashed rgba(78, 78, 242, 0.4);
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_addVideo">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>480</x>
@@ -763,6 +769,9 @@ line-height: 36px;
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_10">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>334</x>
@@ -1101,12 +1110,15 @@ font-weight:bold;
      </property>
     </widget>
     <widget class="QCheckBox" name="checkBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>310</x>
-       <y>670</y>
-       <width>151</width>
-       <height>51</height>
+       <y>679</y>
+       <width>31</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -1120,6 +1132,30 @@ font-weight:bold;
       <string notr="true">QcheckBox {
 width: 110px;
 height: 40px;
+font-size: 24px;
+font-family: AlibabaPuHuiTi_2_65_Medium;
+color: #333333;
+line-height: 36px;
+font-weight:bold;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>680</y>
+       <width>121</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+width: 119px;
+height: 36px;
 font-size: 24px;
 font-family: AlibabaPuHuiTi_2_65_Medium;
 color: #333333;
@@ -1147,6 +1183,7 @@ font-weight:bold;
     <zorder>label_11</zorder>
     <zorder>label_24</zorder>
     <zorder>checkBox</zorder>
+    <zorder>label_12</zorder>
    </widget>
    <widget class="QPushButton" name="pushButton_13">
     <property name="geometry">
