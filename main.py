@@ -44,6 +44,7 @@ class status():
         self.final_time = 0
         self.txt_output_path = ''
         self.video_output_path = ''
+        self.txt_statistic_output_path = ''
         # self.is_enter = False
 
     def show_ui(self, location):
@@ -82,7 +83,7 @@ class status():
 
     def help_set_edit(self, edit, one):
         if one == 1 or one == -1:
-            self.time = self.time+one
+            self.time = self.time + one
             if self.time>999: self.time=999
             if self.time<0: self.time=0
             edit.setText(str(self.time))
@@ -96,11 +97,15 @@ class status():
 
     def help_set_edit_by_hand(self, edit, one):
         if one == 1:
-            self.time = int(edit.text())
-            now = int(edit.text())
-            if self.time>999: self.time = 999
-            if self.time<0: self.time = 0
-            if now != self.time: edit.setText(str(self.time))
+            text = edit.text()
+            if not text.isdigit():
+                QMessageBox.warning(self.ui, '错误提示', '只能输入整形数字！')
+            else:
+                self.time = int(edit.text())
+                now = int(edit.text())
+                if self.time>999: self.time = 999
+                if self.time<0: self.time = 0
+                if now != self.time: edit.setText(str(self.time))
         else:
             self.confi = int(Decimal(str(edit.text())) * 100)
             self.confi = Decimal(str(self.confi / 100.0))
@@ -187,7 +192,6 @@ class status():
                                       , 800, 400, 320, 180
                                       , test_video
                                       , self.ui)
-
             label3 = MyMenuVideoLabel("source/second/people_two.PNG"
                                       , 1240, 400, 320, 180
                                       , test_video
@@ -197,12 +201,11 @@ class status():
                                       , 360, 400, 320, 180
                                       , test_video
                                       , self.ui)
-            label2 = MyMenuVideoLabel("source/second/car_two.PNG"
+            label2 = MyMenuVideoLabel("source/second/car_small.PNG"
                                       , 800, 400, 320, 180
                                       , test_video
                                       , self.ui)
-
-            label3 = MyMenuVideoLabel("source/second/car_small.PNG"
+            label3 = MyMenuVideoLabel("source/second/car_two.PNG"
                                       , 1240, 400, 320, 180
                                       , test_video
                                       , self.ui)
@@ -210,6 +213,7 @@ class status():
 
     def pedestrian_menu(self):
         self.is_mult = False
+        self.is_enter_surely = 0
         self.load_son_menu("pedestrian_menu.ui", 1)
         self.ui.pushButton.clicked.connect(self.pedestrian_one_photo)
         self.ui.pushButton_2.clicked.connect(self.pedestrian_small_object)
@@ -218,6 +222,7 @@ class status():
 
     def car_menu(self):
         self.is_mult = False
+        self.is_enter_surely = 0
         self.load_son_menu("car_menu.ui", 2)
         self.ui.pushButton_12.clicked.connect(self.handleCalc)
         self.ui.pushButton.clicked.connect(self.car_one_photo)
@@ -479,8 +484,6 @@ class status():
             self.have_show_time = 0
             self.Display_Image(frame, self.ui.label_7)
 
-
-
     def init_base_ui_for_one_photo_changing_enter(self, ui_location):
         self.show_ui(ui_location)
         s = """QLineEdit{\nwidth: 80px;\nheight: 40px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\n\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #333333;\nline-height: 26px;\nfont-weight:bold;\n}"""
@@ -515,14 +518,17 @@ class status():
 
 
     def load_control_for_double_photo(self):
-        self.help_set_spinBox(self.lineEditConfi, self.ui.pushButton_7
-                              , self.ui.pushButton_11, 0.01)
+        self.help_set_spinBox(self.lineEditConfi,
+                              self.ui.pushButton_7,
+                              self.ui.pushButton_11,
+                              0.01)
 
     def load_control_for_one_photo(self):
         self.help_set_spinBox(self.lineEditConfi,
                               self.ui.pushButton_7,
                               self.ui.pushButton_11,
                               0.01)
+
         self.help_set_spinBox(self.ui.lineEdit_2,
                               self.ui.pushButton_5,
                               self.ui.pushButton_6,
@@ -543,8 +549,6 @@ class status():
         """
         num_now = len(self.file_path)
         filePath = self.open_one_file_dialog("选择视频", 0)
-        # control_hide.setVisible(False)
-        # control_label.setText("已添加")
         if filePath == "":
             return
         self.file_path.append(filePath)
@@ -552,22 +556,37 @@ class status():
         self.video_path.append(filePath)
 
         if len(self.file_path) < self.have_show_video:
+            # 数量对不上就return，说明没有给够
             return
-        # 数量对不上就return，说明没有给够
+
+        self.time = 2
+
+        # note: 判断是否打开出入口界面并进行跳转
         if self.have_show_video == 1 and self.is_mult == False:
             self.is_enter = False
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
         else:
             self.init_base_ui_for_double_photo(self.not_enter_ui)
+
         self.lineEditConfi.setText("0.5")
-        print(self.file_path[0])
+
         self.model_file_path = self.file_path[0]
+
         file_temp_split_path = self.file_path[0].split('.')
         self.file_name = file_temp_split_path[0]
-        self.file_path[0] = 'output/' + file_temp_split_path[0].split('/')[-1] + '.mp4'
-        print(self.file_path[0])
-        self.txt_output_path = 'output/' + file_temp_split_path[0].split('/')[-1] + '_flow_statistic.txt'
+
+        # note: 修改使得支持多视频格式
+        # self.file_path[0] = 'output/' + file_temp_split_path[0].split('/')[-1] + '.mp4'
+        self.file_path[0] = 'output/' + self.file_path[0].split('/')[-1]
+
+        # 结果文件默认输出路径
         self.video_output_path = self.file_path[0]
+        if self.page_id == 7 or self.page_id == 8:
+            self.txt_output_path = 'output/' + file_temp_split_path[0].split('/')[-1] + '.txt'
+        else:
+            self.txt_output_path = 'output/' + file_temp_split_path[0].split('/')[-1] + '.txt'
+            self.txt_statistic_output_path = 'output/' + file_temp_split_path[0].split('/')[-1] + '_flow_statistic.txt'
+        print(self.txt_output_path)
 
         if self.page_id == 7:
             pic = QPixmap('source/second/mul_one.png')
@@ -582,15 +601,20 @@ class status():
         self.open_video()
 
     def load_model(self):
+        # 获取时段长度值
+        period = self.ui.lineEdit_2.text()
+        print('时段长度:' + period)
+
+        print('加载单类别模型')
         print(self.file_name)
         file_name_test = self.file_name.split('/')
         file_path_test = self.file_path[0].split('/')
         file_name_test_start = file_name_test[len(file_name_test) - 1]
         self.file_name = file_name_test_start + '.mp4'
         self.end_file_name = self.file_name
+
         # self.ui.label_23.setFixedSize \
         #     (self.ui.label_23.width(), self.ui.label_23.height())
-        starttime = datetime.datetime.now()
 
         # note：获取取消轨迹复选框状态，判断是否取消轨迹
         if self.ui.checkBox.checkState() == Qt.Checked:
@@ -619,6 +643,7 @@ class status():
         self.ui.pushButton_10.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 40px;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-weight:bold;\nwidth: 80px;\nheight: 24px;\nfont-size: 16px;\nfont-family:\nAlibabaPuHuiTi_2_65_Medium;\nline-height: 24px;\ncolor: #888888;\n}")
 
+        starttime = datetime.datetime.now()
         # note：添加异常捕获
         try:
             #判断是行人模型还是车辆模型
@@ -632,23 +657,23 @@ class status():
             if self.page_id == 1:
                 print("当前是行人模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320 --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320 --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s  --secs_interval=%s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 2:
                 print("当前是车辆模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s --secs_interval=%s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 3:
                 print("当前是行人小目标跟踪模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s --secs_interval=%s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 5:
                 print("当前是车辆小目标跟踪模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s --secs_interval=%s' \
+                    % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 7:
                 val = os.system(
                     '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
@@ -659,6 +684,8 @@ class status():
                     % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
         except Exception as e:
             print(e)  # 打印所有异常到屏幕
+            QMessageBox.warning(self.ui, '错误提示', '模型运行发生异常!\n报错信息:' + e)
+            return
 
         endtime = datetime.datetime.now()
         starttime_count = starttime.hour * 3600 + starttime.minute * 60 + starttime.second
@@ -667,9 +694,10 @@ class status():
         self.ui.label_28.setText(str((endtime_count - starttime_count)))
 
         # note: 优化FPS显示问题
-        self.cap1 = cv2.VideoCapture(self.file_path[0])
-        self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
-        # self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
+        if self.is_enter_surely == 0:
+            self.cap1 = cv2.VideoCapture(self.file_path[0])
+            self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
+            # self.ui.label_26.setText(str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
 
         # self.synthesis_vide(val, self.file_name)
         if self.is_enter_surely == 0:
@@ -697,15 +725,18 @@ class status():
         self.ui.pushButton_8.setEnabled(True)  # 导出结果
 
     def load_model_mult(self):
+        print('加载多类别模型')
+
         print(self.file_name)
         file_name_test = self.file_name.split('/')
         file_path_test = self.file_path[0].split('/')
         file_name_test_start = file_name_test[len(file_name_test) - 1]
         self.file_name = file_name_test_start + '.mp4'
         self.end_file_name = self.file_name
+
         # self.ui.label_23.setFixedSize \
         #     (self.ui.label_23.width(), self.ui.label_23.height())
-        starttime = datetime.datetime.now()
+
         # note：获取取消轨迹复选框状态，判断是否取消轨迹
         if self.ui.checkBox.checkState() == Qt.Checked:
             self.is_tracking = ''
@@ -719,6 +750,7 @@ class status():
         self.ui.pushButton_11.setEnabled(False)
         self.lineEditConfi.setEnabled(False)
 
+        starttime = datetime.datetime.now()
         # note: 添加异常捕获
         try:
             # 判断是行人模型还是车辆模型
@@ -731,13 +763,15 @@ class status():
             if self.page_id == 7:
                 val = os.system(
                     'python deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                    % (self.file_name, self.confi, self.is_tracking, self.is_draw_line))
+                    % (self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
             else:
                 val = os.system(
                     'python deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s' \
-                    % (self.file_name, self.confi, self.is_tracking, self.is_draw_line))
+                    % (self.model_file_path, self.confi, self.is_tracking, self.is_draw_line))
         except Exception as e:
             print(e)  # 打印所有异常到屏幕
+            QMessageBox.warning(self.ui, '错误提示', '模型运行发生异常!\n报错信息:' + e)
+            return
 
         endtime = datetime.datetime.now()
         starttime_count = starttime.hour * 3600 + starttime.minute * 60 + starttime.second
@@ -777,8 +811,22 @@ class status():
         # ps:后续添加完善选择输出文件路径
         print(self.video_output_path)
         print(self.txt_output_path)
-        shutil.copy(self.video_output_path, output_path)
-        shutil.copy(self.txt_output_path, output_path)
+        video = self.file_path[0].split('/')[-1]
+        if self.page_id == 7 or self.page_id == 8:
+            shutil.copy(self.video_output_path, output_path)
+            shutil.copy(self.txt_output_path, output_path)
+            temp = self.file_path[0].split('.')
+            txt = temp[0].split('/')[-1] + '.txt'
+            QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt)
+        else:
+            shutil.copy(self.video_output_path, output_path)
+            shutil.copy(self.txt_output_path, output_path)
+            shutil.copy(self.txt_statistic_output_path, output_path)
+            temp = self.file_path[0].split('.')
+            txt = temp[0].split('/')[-1] + '.txt'
+            txt_statistic = temp[0].split('/')[-1] + '_flow_statistic.txt'
+            QMessageBox.information(self.ui, 'success',
+                                    '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
 
     def read_enter_txt_file(self):
         self.ui.label_26.setText(str(self.final_time))
@@ -915,11 +963,11 @@ class status():
             self.vW.write(frame)
         self.vW.release()
 
-    def load_video1(self,control_hide,control_label):
-        self.load_video(control_hide,control_label)
+    def load_video1(self, control_hide, control_label):
+        self.load_video(control_hide, control_label)
 
-    def load_video2(self,control_hide,control_label):
-        self.load_video(control_hide,control_label)
+    def load_video2(self, control_hide, control_label):
+        self.load_video(control_hide, control_label)
 
     def open_video(self):
         self.have_show_time=0
@@ -946,7 +994,6 @@ class status():
 
     def load_video_controller(self):
         self.ui.pushButton.clicked.connect(self.video_pause)
-        # note: 后续需要调整为必须模型运行后才可以点击结果显示按钮。
         self.ui.pushButton_2.clicked.connect(self.video_start)
         self.ui.pushButton_3.clicked.connect(self.video_stop)
         self.ui.pushButton_8.clicked.connect(self.output_result)
@@ -992,10 +1039,43 @@ class status():
             self.timer_camera2.timeout.connect(self.OpenFrame2)
 
     def video_pause(self):
+
+        # note: 检测对应预测模型存不存在，并弹窗提示
+        # 行人跟踪模型
+        if self.page_id == 1 and not os.path.exists('output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320'):
+            QMessageBox.warning(self.ui, '错误提示', '行人跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
+            return
+        # 行人小目标跟踪模型
+        elif self.page_id == 3 and not os.path.exists('output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian'):
+            QMessageBox.warning(self.ui, '错误提示', '行人小目标跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
+            return
+        # 车辆跟踪模型
+        elif self.page_id == 2 and not os.path.exists('output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle'):
+            QMessageBox.warning(self.ui, '错误提示', '车辆跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
+            return
+        # 车辆小目标跟踪模型
+        elif self.page_id == 5 and not os.path.exists('output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle'):
+            QMessageBox.warning(self.ui, '错误提示', '车辆小目标跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
+            return
+        # 多类别跟踪模型
+        elif self.page_id == 7 and not os.path.exists('output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100k_mcmot'):
+            QMessageBox.warning(self.ui, '错误提示', '多类别跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
+            return
+        # 多类别小目标跟踪模型
+        elif self.page_id == 8 and not os.path.exists('output_inference/mcfairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone'):
+            QMessageBox.warning(self.ui, '错误提示', '多类别小目标跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
+            return
+
         # note：运行后显示运行中
         pic = QPixmap('source/second/loading.png')
         self.ui.label_7.setPixmap(pic)
         self.ui.label_7.setScaledContents(True)
+
+        # note: 后续可尝试添加显示动态gif
+        # self.movie = QMovie('video/test.gif')
+        # self.ui.label_7.setMovie(self.movie)
+        # self.movie.start()
+
         # self.timer_camera1.stop()
         # if self.have_show_video == 2:
         #     self.timer_camera2.stop()
@@ -1006,7 +1086,7 @@ class status():
         if self.page_id == 8 or self.page_id == 7:
             self.t1 = threading.Thread(target=self.load_model_mult)
             self.t1.start()
-        else :
+        else:
             self.t1 = threading.Thread(target=self.load_model)
             self.t1.start()
 
