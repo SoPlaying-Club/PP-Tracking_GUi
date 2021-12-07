@@ -714,158 +714,13 @@ line-height: 24px;
        <string>关闭出入口</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_16">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>281</y>
-        <width>111</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QLabel{
-width: 111px;
-height: 26px;
-font-size: 18px;
-font-family: AlibabaPuHuiTi_2_55_Regular;
-color: #333333;
-line-height: 26px;
-font-weight:bold;
-border-radius: 0px;
-border: 0px solid rgba(221, 221, 221, 0.3);
-}</string>
-      </property>
-      <property name="text">
-       <string>时段长度(s)：</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_2">
-      <property name="geometry">
-       <rect>
-        <x>131</x>
-        <y>274</y>
-        <width>80</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QLineEdit{
-width: 80px;
-height: 40px;
-background: #FFFFFF;
-border-radius: 4px;
-border: 1px solid #CCCCCC;
-
-font-size: 18px;
-font-family: AlibabaPuHuiTi_2_65_Medium;
-color: #333333;
-line-height: 26px;
-font-weight:bold;
-}</string>
-      </property>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_9">
-      <property name="geometry">
-       <rect>
-        <x>187</x>
-        <y>274</y>
-        <width>24</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QLabel{
-width: 24px;
-height: 21px;
-background: #FFFFFF;
-border-radius: 4px 4px 0px 0px;
-border: 1px solid #CCCCCC;
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_17">
-      <property name="geometry">
-       <rect>
-        <x>187</x>
-        <y>294</y>
-        <width>24</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QLabel{
-width: 24px;
-height: 21px;
-background: #FFFFFF;
-border-radius:4px;
-border: 1px solid #CCCCCC;
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_5">
-      <property name="geometry">
-       <rect>
-        <x>191</x>
-        <y>276</y>
-        <width>16</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton{
-image:url(:/1/source/second/normal_triangle_up.png);
-border:0px
-}
-
-QPushButton:hover{
-image:url(:/1/source/second/light_up.png);
-border:0px
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_6">
-      <property name="geometry">
-       <rect>
-        <x>191</x>
-        <y>296</y>
-        <width>16</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton{
-image:url(:/1/source/second/normal_triangle_down.png);
-border:0px
-}
-QPushButton:hover{
-image:url(:/1/source/second/light_down.png);
-border:0px
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QWidget" name="widget_7" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
         <y>68</y>
         <width>134</width>
-        <height>102</height>
+        <height>130</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -907,7 +762,7 @@ border:0px
        <property name="geometry">
         <rect>
          <x>16</x>
-         <y>50</y>
+         <y>70</y>
          <width>101</width>
          <height>36</height>
         </rect>
@@ -937,7 +792,7 @@ border:0px
         <x>170</x>
         <y>68</y>
         <width>134</width>
-        <height>102</height>
+        <height>130</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -979,7 +834,7 @@ border:0px
        <property name="geometry">
         <rect>
          <x>16</x>
-         <y>50</y>
+         <y>70</y>
          <width>101</width>
          <height>36</height>
         </rect>
@@ -1009,7 +864,7 @@ border:0px
         <x>320</x>
         <y>68</y>
         <width>134</width>
-        <height>102</height>
+        <height>130</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -1051,7 +906,7 @@ border:0px
        <property name="geometry">
         <rect>
          <x>16</x>
-         <y>50</y>
+         <y>70</y>
          <width>101</width>
          <height>36</height>
         </rect>
@@ -1075,17 +930,6 @@ border:0px
        </property>
       </widget>
      </widget>
-     <zorder>lineEdit_2</zorder>
-     <zorder>label_15</zorder>
-     <zorder>pushButton_10</zorder>
-     <zorder>label_16</zorder>
-     <zorder>label_9</zorder>
-     <zorder>pushButton_5</zorder>
-     <zorder>label_17</zorder>
-     <zorder>pushButton_6</zorder>
-     <zorder>widget_7</zorder>
-     <zorder>widget_9</zorder>
-     <zorder>widget_10</zorder>
     </widget>
     <widget class="QLabel" name="label_22">
      <property name="geometry">

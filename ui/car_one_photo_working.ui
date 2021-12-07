@@ -978,7 +978,7 @@ font-weight:bold;
 }</string>
       </property>
       <property name="text">
-       <string/>
+       <string>10</string>
       </property>
      </widget>
      <widget class="QWidget" name="widget_7" native="true">
