@@ -15,10 +15,9 @@ import matplotlib.pyplot as plt
 import secondSource
 from PySide2.QtGui import QMovie
 import sys
+import numpy as np
 
-# note:
-import os  # os是用来切换路径和创建文件夹的
-import shutil #shutil 是用来复制黏贴文件的
+import shutil
 from decimal import Decimal
 
 matplotlib.use('agg')
@@ -94,6 +93,17 @@ class status():
             if self.confi > 1.0: self.confi = 1.0
             if self.confi < 0.0: self.confi = 0.0
             edit.setText(str(self.confi))
+
+    def help_set_edit_by_hand_new(self, edit):
+        text = edit.text()
+        if not text.isdigit():
+            QMessageBox.warning(self.ui, '错误提示', '只能输入整形数字！')
+        else:
+            self.std = int(edit.text())
+            now = int(edit.text())
+            if self.std>9999: self.std = 9999
+            if self.std<0: self.std = 0
+            if now != self.std: edit.setText(str(self.std))
 
     def help_set_edit_by_hand(self, edit, one):
         if one == 1:
@@ -321,6 +331,7 @@ class status():
         self.not_enter_ui = next_ui
         self.confi = 0.5
         self.time = 0
+        self.std = 10
         self.progressPos = 0.0
         self.ui.show()
 
@@ -342,6 +353,7 @@ class status():
         self.is_enter_ui = is_enter_ui
         self.confi = 0.5
         self.time = 0
+        self.std = 10
         self.progressPos = 0.00
         self.ui.pushButton_addVideo.clicked.connect(
             lambda: self.load_video1(self.ui.pushButton_addVideo,
@@ -366,6 +378,7 @@ class status():
         self.not_enter_ui = "mult_one_photo_working.ui"
         self.confi = 0.5
         self.time = 0
+        self.std = 10
         self.progressPos = 0.00
         self.ui.show()
 
@@ -387,6 +400,7 @@ class status():
         self.not_enter_ui = "mult_small_object_working.ui"
         self.confi = 0.5
         self.time = 0
+        self.std = 10
         self.progressPos = 0.00
         self.ui.show()
 
@@ -401,21 +415,24 @@ class status():
         """
         result = []
         result.append(self.lineEditConfi.text())
-        result.append(self.ui.lineEdit_2.text())
-        print(self.ui.lineEdit_2.text())
-        self.is_draw_line = '--do_entrance_counting'
+        # result.append(self.ui.lineEdit_2.text())
+        # print(self.ui.lineEdit_2.text())
+
 
         if self.is_enter == False:
             self.is_enter = True
             self.is_enter_surely = 1
+            self.is_draw_line = '--do_entrance_counting'
             self.init_base_ui_for_one_photo_changing_enter(self.is_enter_ui)
         elif self.is_enter == True:
             self.is_enter = False
             self.is_enter_surely = 0
+            self.is_draw_line = ''
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
 
         self.lineEditConfi.setText("0.5")
-        self.ui.lineEdit_2.setText(result[1])
+        # self.ui.lineEdit_2.setText(result[1])
+
         # note:无法选择按钮暂时变灰
         self.ui.pushButton_2.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
@@ -510,6 +527,7 @@ class status():
         self.ui.label_22.setVisible(False)
         self.ui.label_frames.setVisible(False)
         self.ui.show()
+
         # note：添加显示视频图片
         self.cap3 = cv2.VideoCapture(self.video_path[0])
         ret, frame = self.cap3.read()
@@ -529,15 +547,20 @@ class status():
                               self.ui.pushButton_11,
                               0.01)
 
-        self.help_set_spinBox(self.ui.lineEdit_2,
-                              self.ui.pushButton_5,
-                              self.ui.pushButton_6,
-                              1)
+        # 可视化界面： 时段长度和人流密度标准添加限制
+        if self.is_enter_surely == 0:
+            self.help_set_spinBox(self.ui.lineEdit_2,
+                                  self.ui.pushButton_5,
+                                  self.ui.pushButton_6,
+                                  1)
+            self.ui.lineEdit_3.textChanged.connect(lambda: self.help_set_edit_by_hand_new(self.ui.lineEdit_3))
+
         return
 
     def load_control_for_one_mult_photo(self):
         self.help_set_spinBox(self.lineEditConfi, self.ui.pushButton_7
                               , self.ui.pushButton_11, 0.01)
+
         # self.help_set_spinBox(self.ui.lineEdit_2, self.ui.pushButton_5
         #                       , self.ui.pushButton_6, 1)
         return
@@ -560,6 +583,7 @@ class status():
             return
 
         self.time = 2
+        self.std = 10
 
         # note: 判断是否打开出入口界面并进行跳转
         if self.have_show_video == 1 and self.is_mult == False:
@@ -601,9 +625,22 @@ class status():
         self.open_video()
 
     def load_model(self):
-        # 获取时段长度值
-        period = self.ui.lineEdit_2.text()
-        print('时段长度:' + period)
+        if self.is_enter_surely == 0:
+            # 获取时段长度值
+            period_length = self.ui.lineEdit_2.text()
+            period = '--secs_interval=%s'%(period_length)
+            print(period)
+            # 时段长度失效
+            self.ui.pushButton_5.setEnabled(False)
+            self.ui.pushButton_6.setEnabled(False)
+            self.ui.lineEdit_2.setEnabled(False)
+            text = self.ui.lineEdit_2.text()
+            if not text.isdigit():
+                QMessageBox.warning(self.ui, '错误提示', '人流密度值只能为整形数字！')
+                return
+        else:
+            period = ''
+            print(period)
 
         print('加载单类别模型')
         print(self.file_name)
@@ -628,13 +665,10 @@ class status():
         self.ui.pushButton_7.setEnabled(False)
         self.ui.pushButton_11.setEnabled(False)
         self.lineEditConfi.setEnabled(False)
-        # 时段长度失效
-        self.ui.pushButton_5.setEnabled(False)
-        self.ui.pushButton_6.setEnabled(False)
-        self.ui.lineEdit_2.setEnabled(False)
 
         # 让人流密度指标调整失效
         if self.is_enter_surely == 0:
+            self.standard = self.ui.lineEdit_3.text()
             self.ui.lineEdit_3.setEnabled(False)
 
         self.ui.pushButton_10.setEnabled(False)  # 让开关出入口失效
@@ -657,22 +691,22 @@ class status():
             if self.page_id == 1:
                 print("当前是行人模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320 --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s  --secs_interval=%s' \
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320 --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s %s' \
                     % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 2:
                 print("当前是车辆模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s --secs_interval=%s' \
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_bdd100kmot_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s %s' \
                     % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 3:
                 print("当前是行人小目标跟踪模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s --secs_interval=%s' \
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_1088x608_visdrone_pedestrian --video_file=%s   --save_mot_txts --device=GPU --threshold=%s %s %s %s' \
                     % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 5:
                 print("当前是车辆小目标跟踪模型")
                 val = os.system(
-                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s --secs_interval=%s' \
+                    '%s deploy/pptracking/python/mot_jde_infer.py --model_dir=output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320_visdrone_vehicle --video_file=%s  --save_mot_txts --device=GPU --threshold=%s %s %s %s' \
                     % (python_exe, self.model_file_path, self.confi, self.is_tracking, self.is_draw_line, period))
             elif self.page_id == 7:
                 val = os.system(
@@ -706,6 +740,8 @@ class status():
             self.read_enter_txt_file()
 
         pic = QPixmap('source/second/model_ok.png')
+        self.ui.label_7.setFixedSize(960, 540)
+        self.ui.label_7.move(60, 108)
         self.ui.label_7.setPixmap(pic)
         self.ui.label_7.setScaledContents(True)
 
@@ -778,6 +814,8 @@ class status():
         endtime_count = endtime.hour * 3600 + endtime.minute * 60 + endtime.second
 
         pic = QPixmap('source/second/model_ok.png')
+        self.ui.label_7.setFixedSize(960, 540)
+        self.ui.label_7.move(60, 108)
         self.ui.label_7.setPixmap(pic)
         self.ui.label_7.setScaledContents(True)
 
@@ -797,7 +835,6 @@ class status():
         self.ui.pushButton_3.setEnabled(True)  # 停止运行
         self.ui.pushButton_8.setEnabled(True)  # 导出结果
 
-
     # note: 添加导出结果功能：选择输出文件夹，将结果文件拷贝到该路径下
     def output_result(self):
         # 选择目录，返回选中的路径
@@ -808,9 +845,8 @@ class status():
             return
         else:
             print('导出文件路径:' + output_path)
+
         # ps:后续添加完善选择输出文件路径
-        print(self.video_output_path)
-        print(self.txt_output_path)
         video = self.file_path[0].split('/')[-1]
         if self.page_id == 7 or self.page_id == 8:
             shutil.copy(self.video_output_path, output_path)
@@ -825,8 +861,22 @@ class status():
             temp = self.file_path[0].split('.')
             txt = temp[0].split('/')[-1] + '.txt'
             txt_statistic = temp[0].split('/')[-1] + '_flow_statistic.txt'
-            QMessageBox.information(self.ui, 'success',
-                                    '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
+            if self.page_id == 1 or self.page_id == 3:
+                if self.is_enter_surely == 0:
+                    shutil.copy('output/people_image.png', output_path)
+                    QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic + '\n可视化绘图：people_image.png')
+                else:
+                    QMessageBox.information(self.ui, 'success',
+                                            '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
+            elif self.page_id == 3 or self.page_id == 5:
+                if self.is_enter_surely == 0:
+                    shutil.copy('output/car_image.png', output_path)
+                    QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic + '\n可视化绘图：car_image.png')
+                else:
+                    QMessageBox.information(self.ui, 'success',
+                                            '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
+            else:
+                QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
 
     def read_enter_txt_file(self):
         self.ui.label_26.setText(str(self.final_time))
@@ -839,9 +889,7 @@ class status():
         current_count_list_x = []
         for i in range(len(list)):
             new_temp_list = list[i].strip('\n').split(' ')
-            print(new_temp_list)
             current_count = new_temp_list[8]
-            print(current_count)
             current_count_in = current_count.split(',')
             current_count_in_true = current_count_in[0]
             current_count_1 = new_temp_list[11]
@@ -888,7 +936,7 @@ class status():
         plt.legend()  # 让图例生效
         plt.margins(0)
         plt.subplots_adjust(bottom=0.10)
-        plt.savefig('people_image.png')
+        plt.savefig('output/people_image.png')
         # plt.show()
 
         # 当前的人数计数
@@ -900,43 +948,96 @@ class status():
     def read_txt_file(self):
         end_file_name_list = self.end_file_name.split('.')
         self.end_file_name = end_file_name_list[0]
-        f = open('output/' + self.end_file_name +  '_flow_statistic.txt', 'r')
+        f = open('output/' + self.end_file_name + '_flow_statistic.txt', 'r')
         with open('output/' + self.end_file_name + '_flow_statistic.txt', 'r') as f1:
             list = f1.readlines()
+
         current_count_list_y = []
         current_count_list_x = []
+
+        # 人流密度标准
+        standard = int(self.standard)
+        # 时段长度
+        interval = int(self.ui.lineEdit_2.text())
+
+        first = list[0].split(' ')[-1].replace("\n", "")
+        current_count_list_y.append(int(first))
+        current_count_list_x.append(0)
+
         y_test = []
-        test = int(len(list) / 50) + 1
-        iter = 0
-        for i in range(test):
-            print(list)
-            new_temp_list = list[iter - 1].strip('\n').split(' ')
-            current_count = new_temp_list[len(new_temp_list) - 1]
-            print(new_temp_list)
-            temp_current_count = current_count.split(',')
-            print(temp_current_count[0])
-            current_count = int(temp_current_count[0])
-            current_count_list_y.append(current_count)
-            current_count_list_x.append(i)
-            iter = iter + 50
+        iter = 1
+        for i in range(len(list)):
+            judge = list[i].split(' ')[-2]
+            if judge == 'secs:':
+                count = list[i].split(' ')[-1].replace("\n", "")
+                count = int(count)
+                current_count_list_y.append(count)
+                current_count_list_x.append(iter * interval)
+                iter += 1
+
         for i in range(len(current_count_list_y)):
-            y_test.append(10)
-        plt.plot(current_count_list_x,current_count_list_y, mec='r', mfc='w', label='people')
-        plt.plot(current_count_list_x, y_test, ms=10, label='Boundary')
-        plt.legend()  # 让图例生效
-        plt.margins(0)
-        plt.subplots_adjust(bottom=0.10)
-        plt.savefig('people_image.png')
-        # plt.show()
-        pic = QPixmap('people_image.png')
+            y_test.append(standard)
+
+        # 判断是人流还是车流
+        if self.page_id == 1 or self.page_id == 3:
+            plt.plot(current_count_list_x, current_count_list_y, c='blue', mec='r', mfc='w', label='Pedestrian volume')
+            plt.plot(current_count_list_x, y_test, c='brown', ms=standard, label='Density standard')
+            below_threshold = np.array(current_count_list_y) < int(standard)
+            plt.scatter(np.array(current_count_list_x)[below_threshold],
+                        np.array(current_count_list_y)[below_threshold],
+                        color='green', marker='^', linewidths=4)
+            above_threshold = np.logical_not(below_threshold)
+            plt.scatter(np.array(current_count_list_x)[above_threshold],
+                        np.array(current_count_list_y)[above_threshold],
+                        color='red', marker='v', linewidths=4)
+            min = np.array(current_count_list_y).min()
+            max = np.array(current_count_list_y).max()
+            if min > standard:
+                min = standard
+            if max < standard:
+                max = standard
+            plt.ylim(min - 2, max + 2)
+            plt.legend()  # 让图例生效
+            plt.margins(0)
+            # plt.subplots_adjust(bottom=0.10)
+            plt.savefig('output/people_image.png')
+            # plt.show()
+            pic = QPixmap('output/people_image.png')
+
+        elif self.page_id == 2 or self.page_id == 5:
+            plt.plot(current_count_list_x, current_count_list_y, c='blue', mec='r', mfc='w', label='Car volume')
+            plt.plot(current_count_list_x, y_test, c='brown', ms=standard, label='Density standard')
+            below_threshold = np.array(current_count_list_y) < int(standard)
+            plt.scatter(np.array(current_count_list_x)[below_threshold],
+                        np.array(current_count_list_y)[below_threshold],
+                        color='green', marker='^', linewidths=4)
+            above_threshold = np.logical_not(below_threshold)
+            plt.scatter(np.array(current_count_list_x)[above_threshold],
+                        np.array(current_count_list_y)[above_threshold],
+                        color='red', marker='v', linewidths=4)
+            min = np.array(current_count_list_y).min()
+            max = np.array(current_count_list_y).max()
+            if min > standard:
+                min = standard
+            if max < standard:
+                max = standard
+            plt.ylim(min - 2, max + 2)
+            plt.legend()  # 让图例生效
+            plt.margins(0)
+            # plt.subplots_adjust(bottom=0.10)
+            plt.savefig('output/car_image.png')
+            # plt.show()
+            pic = QPixmap('output/car_image.png')
+
         self.ui.label_33.setPixmap(pic)
         self.ui.label_33.setScaledContents(True)
+
         # 当前的人数计数
-        self.current_count = current_count_list_y[len(current_count_list_y) - 1]
-        self.ui.label_30.setText(str(self.current_count))
-        # to do : 完善当前时段人流显示
-        self.ui.label_32.setText(str(self.current_count))
-        # to do: 完善人流密度标准显示
+        # self.current_count = current_count_list_y[len(current_count_list_y) - 1]
+
+        totalcount = list[-1].split(',')[1].split(' ')[-1]
+        print('total: ' + totalcount)
+        self.ui.label_30.setText(str(totalcount))
         f.close()
         # print(self.cap1[0])
         # frames_num = self.cap1.get(7)
@@ -1066,15 +1167,21 @@ class status():
             QMessageBox.warning(self.ui, '错误提示', '多类别小目标跟踪预测模型不存在，请先下载预测模型到./output_inference目录下!')
             return
 
+        if self.page_id == 4 or self.page_id == 6:
+            QMessageBox.information(self.ui, '提示', '跨境头功能尚在完善中，敬请期待!')
+            return
+
         # note：运行后显示运行中
-        pic = QPixmap('source/second/loading.png')
-        self.ui.label_7.setPixmap(pic)
-        self.ui.label_7.setScaledContents(True)
+        # pic = QPixmap('source/second/loading.png')
+        # self.ui.label_7.setPixmap(pic)
+        # self.ui.label_7.setScaledContents(True)
 
         # note: 后续可尝试添加显示动态gif
-        # self.movie = QMovie('video/test.gif')
-        # self.ui.label_7.setMovie(self.movie)
-        # self.movie.start()
+        self.movie = QMovie('source/second/pp.gif')
+        self.ui.label_7.setMovie(self.movie)
+        self.ui.label_7.setFixedSize(320, 320)
+        self.ui.label_7.move(350, 195)
+        self.movie.start()
 
         # self.timer_camera1.stop()
         # if self.have_show_video == 2:
