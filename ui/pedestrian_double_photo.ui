@@ -667,7 +667,7 @@ font-weight:bold;
 }</string>
      </property>
      <property name="text">
-      <string>取消轨迹</string>
+      <string>绘制轨迹</string>
      </property>
     </widget>
     <zorder>pushButton</zorder>
