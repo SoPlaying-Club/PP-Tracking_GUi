@@ -985,6 +985,7 @@ class status():
         # note: 画图前先清空
         plt.cla()
         plt.clf()
+        fig = plt.figure(figsize=(7, 3))
         # 判断是人流还是车流
         if self.page_id == 1 or self.page_id == 3:
             plt.plot(current_count_list_x, current_count_list_y, c='blue', mec='r', mfc='w', label='Pedestrian volume')
@@ -1004,8 +1005,8 @@ class status():
             if max < standard:
                 max = standard
 
-            plt.xlabel('time(/s)', fontsize=14, color='black')
-            plt.ylabel('pedestrian volume', fontsize=14, color='black')
+            # plt.xlabel('time(/s)', fontsize=14, color='black')
+            # plt.ylabel('pedestrian volume', fontsize=14, color='black')
             # 限制上下限
             xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
             # 修改纵坐标的刻度
@@ -1036,8 +1037,8 @@ class status():
             if max < standard:
                 max = standard
 
-            plt.xlabel('time(/s)', fontsize=14, color='black')
-            plt.ylabel('car volume', fontsize=14, color='black')
+            # plt.xlabel('time(/s)', fontsize=14, color='black')
+            # plt.ylabel('car volume', fontsize=14, color='black')
             xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
             # 修改纵坐标的刻度
             # yticks(np.linspace(int(min) - 2, int(max) + 2, int(max - min + 5), endpoint=True))
