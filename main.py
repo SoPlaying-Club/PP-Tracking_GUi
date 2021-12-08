@@ -25,6 +25,7 @@ sys.path.append('deploy')
 
 from MyControl import *
 from PIL import Image
+from pylab import xticks,yticks,np
 
 dirname = os.path.dirname(PySide2.__file__)
 plugin_path = os.path.join(dirname, 'plugins', 'platforms')
@@ -97,7 +98,7 @@ class status():
     def help_set_edit_by_hand_new(self, edit):
         text = edit.text()
         if not text.isdigit():
-            QMessageBox.warning(self.ui, '错误提示', '只能输入整形数字！')
+            QMessageBox.warning(self.ui, '错误提示', '密度标准只能输入整形数字！')
         else:
             self.std = int(edit.text())
             now = int(edit.text())
@@ -418,16 +419,17 @@ class status():
         # result.append(self.ui.lineEdit_2.text())
         # print(self.ui.lineEdit_2.text())
 
-
         if self.is_enter == False:
             self.is_enter = True
             self.is_enter_surely = 1
             self.is_draw_line = '--do_entrance_counting'
+            self.confi = 0.5
             self.init_base_ui_for_one_photo_changing_enter(self.is_enter_ui)
         elif self.is_enter == True:
             self.is_enter = False
             self.is_enter_surely = 0
             self.is_draw_line = ''
+            self.confi = 0.5
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
 
         self.lineEditConfi.setText("0.5")
@@ -653,11 +655,11 @@ class status():
         # self.ui.label_23.setFixedSize \
         #     (self.ui.label_23.width(), self.ui.label_23.height())
 
-        # note：获取取消轨迹复选框状态，判断是否取消轨迹
+        # note：是否绘制轨迹
         if self.ui.checkBox.checkState() == Qt.Checked:
-            self.is_tracking = ''
-        else:
             self.is_tracking = '--draw_center_traj'
+        else:
+            self.is_tracking = ''
 
         # 模型开始运行及运行完成后让按钮及复选框失效掉
         self.ui.checkBox.setEnabled(False)  # 取消轨迹复选框
@@ -677,6 +679,8 @@ class status():
         self.ui.pushButton_10.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 40px;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-weight:bold;\nwidth: 80px;\nheight: 24px;\nfont-size: 16px;\nfont-family:\nAlibabaPuHuiTi_2_65_Medium;\nline-height: 24px;\ncolor: #888888;\n}")
 
+        self.confi = self.lineEditConfi.text()
+
         starttime = datetime.datetime.now()
         # note：添加异常捕获
         try:
@@ -686,7 +690,7 @@ class status():
             # draw_center_traj
             print(self.is_draw_line)
             print(self.is_tracking)
-            print("lzclzclzclzclzclzc")
+            print("模型开始运行!")
             python_exe = os.environ['PYTHON_EXE']
             if self.page_id == 1:
                 print("当前是行人模型")
@@ -773,11 +777,11 @@ class status():
         # self.ui.label_23.setFixedSize \
         #     (self.ui.label_23.width(), self.ui.label_23.height())
 
-        # note：获取取消轨迹复选框状态，判断是否取消轨迹
+        # note：是否绘制轨迹
         if self.ui.checkBox.checkState() == Qt.Checked:
-            self.is_tracking = ''
-        else:
             self.is_tracking = '--draw_center_traj'
+        else:
+            self.is_tracking = ''
 
         # 模型开始运行及运行完成后让按钮及复选框失效掉
         self.ui.checkBox.setEnabled(False)  # 取消轨迹复选框
@@ -948,7 +952,7 @@ class status():
     def read_txt_file(self):
         end_file_name_list = self.end_file_name.split('.')
         self.end_file_name = end_file_name_list[0]
-        f = open('output/' + self.end_file_name + '_flow_statistic.txt', 'r')
+        # f = open('output/' + self.end_file_name + '_flow_statistic.txt', 'r')
         with open('output/' + self.end_file_name + '_flow_statistic.txt', 'r') as f1:
             list = f1.readlines()
 
@@ -978,6 +982,9 @@ class status():
         for i in range(len(current_count_list_y)):
             y_test.append(standard)
 
+        # note: 画图前先清空
+        plt.cla()
+        plt.clf()
         # 判断是人流还是车流
         if self.page_id == 1 or self.page_id == 3:
             plt.plot(current_count_list_x, current_count_list_y, c='blue', mec='r', mfc='w', label='Pedestrian volume')
@@ -985,18 +992,25 @@ class status():
             below_threshold = np.array(current_count_list_y) < int(standard)
             plt.scatter(np.array(current_count_list_x)[below_threshold],
                         np.array(current_count_list_y)[below_threshold],
-                        color='green', marker='^', linewidths=4)
+                        color='green', marker='^', linewidths=2)
             above_threshold = np.logical_not(below_threshold)
             plt.scatter(np.array(current_count_list_x)[above_threshold],
                         np.array(current_count_list_y)[above_threshold],
-                        color='red', marker='v', linewidths=4)
+                        color='red', marker='v', linewidths=2)
             min = np.array(current_count_list_y).min()
             max = np.array(current_count_list_y).max()
             if min > standard:
                 min = standard
             if max < standard:
                 max = standard
-            plt.ylim(min - 2, max + 2)
+
+            plt.xlabel('time(/s)', fontsize=14, color='black')
+            plt.ylabel('pedestrian volume', fontsize=14, color='black')
+            # 限制上下限
+            xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
+            # 修改纵坐标的刻度
+            # yticks(np.linspace(int(min) - 2, int(max) + 2, int(max - min + 5), endpoint=True))
+            plt.ylim(int(min) - 1, int(max) + 1)
             plt.legend()  # 让图例生效
             plt.margins(0)
             # plt.subplots_adjust(bottom=0.10)
@@ -1010,18 +1024,24 @@ class status():
             below_threshold = np.array(current_count_list_y) < int(standard)
             plt.scatter(np.array(current_count_list_x)[below_threshold],
                         np.array(current_count_list_y)[below_threshold],
-                        color='green', marker='^', linewidths=4)
+                        color='green', marker='^', linewidths=3)
             above_threshold = np.logical_not(below_threshold)
             plt.scatter(np.array(current_count_list_x)[above_threshold],
                         np.array(current_count_list_y)[above_threshold],
-                        color='red', marker='v', linewidths=4)
+                        color='red', marker='v', linewidths=3)
             min = np.array(current_count_list_y).min()
             max = np.array(current_count_list_y).max()
             if min > standard:
                 min = standard
             if max < standard:
                 max = standard
-            plt.ylim(min - 2, max + 2)
+
+            plt.xlabel('time(/s)', fontsize=14, color='black')
+            plt.ylabel('car volume', fontsize=14, color='black')
+            xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
+            # 修改纵坐标的刻度
+            # yticks(np.linspace(int(min) - 2, int(max) + 2, int(max - min + 5), endpoint=True))
+            plt.ylim(int(min) - 1, int(max) + 1)
             plt.legend()  # 让图例生效
             plt.margins(0)
             # plt.subplots_adjust(bottom=0.10)
@@ -1035,10 +1055,11 @@ class status():
         # 当前的人数计数
         # self.current_count = current_count_list_y[len(current_count_list_y) - 1]
 
+        print(current_count_list_y)
         totalcount = list[-1].split(',')[1].split(' ')[-1]
         print('total: ' + totalcount)
         self.ui.label_30.setText(str(totalcount))
-        f.close()
+        # f.close()
         # print(self.cap1[0])
         # frames_num = self.cap1.get(7)
         # fps = int(round(self.cap1.get(cv2.CAP_PROP_FPS)))
@@ -1140,7 +1161,6 @@ class status():
             self.timer_camera2.timeout.connect(self.OpenFrame2)
 
     def video_pause(self):
-
         # note: 检测对应预测模型存不存在，并弹窗提示
         # 行人跟踪模型
         if self.page_id == 1 and not os.path.exists('output_inference/fairmot_hrnetv2_w18_dlafpn_30e_576x320'):
