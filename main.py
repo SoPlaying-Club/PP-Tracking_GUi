@@ -11,6 +11,7 @@ import PySide2
 import datetime
 import firstSource
 import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import secondSource
 from PySide2.QtGui import QMovie
@@ -19,8 +20,6 @@ import numpy as np
 
 import shutil
 from decimal import Decimal
-
-matplotlib.use('agg')
 sys.path.append('deploy')
 
 from MyControl import *
@@ -850,31 +849,37 @@ class status():
         else:
             print('导出文件路径:' + output_path)
 
-        # ps:后续添加完善选择输出文件路径
         video = self.file_path[0].split('/')[-1]
+        new_video_path = output_path + '/' + video
+        print(new_video_path)
+
         if self.page_id == 7 or self.page_id == 8:
-            shutil.copy(self.video_output_path, output_path)
-            shutil.copy(self.txt_output_path, output_path)
+            if not os.path.exists(new_video_path):
+                shutil.copy(self.video_output_path, output_path)
+                shutil.copy(self.txt_output_path, output_path)
             temp = self.file_path[0].split('.')
             txt = temp[0].split('/')[-1] + '.txt'
             QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt)
         else:
-            shutil.copy(self.video_output_path, output_path)
-            shutil.copy(self.txt_output_path, output_path)
-            shutil.copy(self.txt_statistic_output_path, output_path)
+            if not os.path.exists(new_video_path):
+                shutil.copy(self.video_output_path, output_path)
+                shutil.copy(self.txt_output_path, output_path)
+                shutil.copy(self.txt_statistic_output_path, output_path)
             temp = self.file_path[0].split('.')
             txt = temp[0].split('/')[-1] + '.txt'
             txt_statistic = temp[0].split('/')[-1] + '_flow_statistic.txt'
             if self.page_id == 1 or self.page_id == 3:
                 if self.is_enter_surely == 0:
-                    shutil.copy('output/people_image.png', output_path)
+                    if not os.path.exists(output_path + '/people_image.png'):
+                        shutil.copy('output/people_image.png', output_path)
                     QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic + '\n可视化绘图：people_image.png')
                 else:
                     QMessageBox.information(self.ui, 'success',
                                             '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
             elif self.page_id == 3 or self.page_id == 5:
                 if self.is_enter_surely == 0:
-                    shutil.copy('output/car_image.png', output_path)
+                    if not os.path.exists(output_path + '/car_image.png'):
+                        shutil.copy('output/car_image.png', output_path)
                     QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic + '\n可视化绘图：car_image.png')
                 else:
                     QMessageBox.information(self.ui, 'success',
@@ -982,12 +987,12 @@ class status():
         for i in range(len(current_count_list_y)):
             y_test.append(standard)
 
-        # note: 画图前先清空
-        plt.cla()
-        plt.clf()
-        fig = plt.figure(figsize=(7, 3))
         # 判断是人流还是车流
         if self.page_id == 1 or self.page_id == 3:
+            # note: 画图前先清空
+            plt.cla()
+            plt.clf()
+            fig = plt.figure(figsize=(7, 3))
             plt.plot(current_count_list_x, current_count_list_y, c='blue', mec='r', mfc='w', label='Pedestrian volume')
             plt.plot(current_count_list_x, y_test, c='brown', ms=standard, label='Density standard')
             below_threshold = np.array(current_count_list_y) < int(standard)
@@ -1020,6 +1025,10 @@ class status():
             pic = QPixmap('output/people_image.png')
 
         elif self.page_id == 2 or self.page_id == 5:
+            # note: 画图前先清空
+            plt.cla()
+            plt.clf()
+            fig = plt.figure(figsize=(7, 3))
             plt.plot(current_count_list_x, current_count_list_y, c='blue', mec='r', mfc='w', label='Car volume')
             plt.plot(current_count_list_x, y_test, c='brown', ms=standard, label='Density standard')
             below_threshold = np.array(current_count_list_y) < int(standard)
@@ -1036,7 +1045,6 @@ class status():
                 min = standard
             if max < standard:
                 max = standard
-
             # plt.xlabel('time(/s)', fontsize=14, color='black')
             # plt.ylabel('car volume', fontsize=14, color='black')
             xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
@@ -1213,9 +1221,11 @@ class status():
 
         if self.page_id == 8 or self.page_id == 7:
             self.t1 = threading.Thread(target=self.load_model_mult)
+            self.t1.setDaemon(True)
             self.t1.start()
         else:
             self.t1 = threading.Thread(target=self.load_model)
+            self.t1.setDaemon(True)
             self.t1.start()
 
     def OpenFrame1(self):
