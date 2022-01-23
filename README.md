@@ -2,11 +2,11 @@
 
 本项目是基于飞桨开源的实时跟踪系统[PP-Tracking](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking/README.md)开发的可视化界面
 
-在PaddlePaddle中加入pyqt进行GUI页面研发，可使得整个训练过程可视化，并通过GUI界面进行调参，模型预测，视频输出等，通过多种类型的识别，简化整体预测流程。
+在PaddlePaddle中加入PySide2进行GUI页面研发，可使得整个训练过程可视化，并通过GUI界面进行调参，模型预测，视频输出等，通过多种类型的识别，简化整体预测流程。
 
 ![image-20211122180124835](https://z3.ax1x.com/2021/11/22/IzBXjg.png)
 
-GUI界面基于PyQT和PP-Tracking python部署代码开发；当前覆盖单镜头的全部功能，如行人跟踪，车辆跟踪，流量统计等
+GUI界面基于PySide2和PP-Tracking python部署代码开发；当前覆盖单镜头的全部功能，如行人跟踪，车辆跟踪，流量统计等
 
 推荐使用Windows环境
 
