@@ -13,15 +13,14 @@ import firstSource
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import secondSource
 from PySide2.QtGui import QMovie
 import sys
 import numpy as np
-
 import shutil
 from decimal import Decimal
 sys.path.append('deploy')
-
 from MyControl import *
 from PIL import Image
 from pylab import xticks,yticks,np
@@ -613,12 +612,13 @@ class status():
             self.txt_statistic_output_path = 'output/' + file_temp_split_path[0].split('/')[-1] + '_flow_statistic.txt'
         print(self.txt_output_path)
 
+        print(self.video_output_path)
+
         if self.page_id == 7:
             pic = QPixmap('source/second/mul_one.png')
             self.ui.label_9.setPixmap(pic)
             self.ui.label_9.setScaledContents(True)
         elif self.page_id == 8:
-            # note：初始时加载路径错了，进行修正
             pic = QPixmap('source/second/small_mul.png')
             self.ui.label_9.setPixmap(pic)
             self.ui.label_9.setScaledContents(True)
@@ -849,8 +849,9 @@ class status():
         else:
             print('导出文件路径:' + output_path)
 
+        # ps:后续添加完善选择输出文件路径
         video = self.file_path[0].split('/')[-1]
-        new_video_path = output_path + '/' + video
+        new_video_path = output_path + video
         print(new_video_path)
 
         if self.page_id == 7 or self.page_id == 8:
@@ -870,7 +871,7 @@ class status():
             txt_statistic = temp[0].split('/')[-1] + '_flow_statistic.txt'
             if self.page_id == 1 or self.page_id == 3:
                 if self.is_enter_surely == 0:
-                    if not os.path.exists(output_path + '/people_image.png'):
+                    if not os.path.exists(new_video_path):
                         shutil.copy('output/people_image.png', output_path)
                     QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic + '\n可视化绘图：people_image.png')
                 else:
@@ -878,7 +879,7 @@ class status():
                                             '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic)
             elif self.page_id == 3 or self.page_id == 5:
                 if self.is_enter_surely == 0:
-                    if not os.path.exists(output_path + '/car_image.png'):
+                    if not os.path.exists(new_video_path):
                         shutil.copy('output/car_image.png', output_path)
                     QMessageBox.information(self.ui, 'success', '结果导出成功！\n效果视频：' + video + '\n结果文件：' + txt + '\n数据统计文件：' + txt_statistic + '\n可视化绘图：car_image.png')
                 else:
@@ -1045,6 +1046,7 @@ class status():
                 min = standard
             if max < standard:
                 max = standard
+
             # plt.xlabel('time(/s)', fontsize=14, color='black')
             # plt.ylabel('car volume', fontsize=14, color='black')
             xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
@@ -1060,10 +1062,8 @@ class status():
 
         self.ui.label_33.setPixmap(pic)
         self.ui.label_33.setScaledContents(True)
-
         # 当前的人数计数
         # self.current_count = current_count_list_y[len(current_count_list_y) - 1]
-
         print(current_count_list_y)
         totalcount = list[-1].split(',')[1].split(' ')[-1]
         print('total: ' + totalcount)
