@@ -1,4 +1,4 @@
-# PP-Tracking GUI界面测试版
+# PP-Tracking GUI v2.0
 
 本项目是基于飞桨开源的实时跟踪系统[PP-Tracking](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking/README.md)开发的可视化界面
 
