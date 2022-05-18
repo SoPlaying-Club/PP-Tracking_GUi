@@ -1,22 +1,34 @@
 # PP-Tracking GUI v2.0
 
-本项目是基于飞桨开源的实时跟踪系统[PP-Tracking](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking/README.md)开发的可视化界面
+## 一.项目介绍
 
-在PaddlePaddle中加入PySide2进行GUI页面研发，可使得整个训练过程可视化，并通过GUI界面进行调参，模型预测，视频输出等，通过多种类型的识别，简化整体预测流程。
+本项目是基于飞桨开源的实时目标跟踪系统[PP-Tracking](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking)开发的GUI可视化界面。
 
-![image-20211122180124835](https://z3.ax1x.com/2021/11/22/IzBXjg.png)
+用户可通过GUI界面进行调整阈值、模型预测，视频结果输出等，方便了用户直接体验功能。当前覆盖单镜头的全部功能，如行人跟踪，车辆跟踪，流量统计等，适用于智慧交通、安防监控等场景。
 
-GUI界面基于PySide2和PP-Tracking python部署代码开发；当前覆盖单镜头的全部功能，如行人跟踪，车辆跟踪，流量统计等
+## 二.项目界面演示：
 
-推荐使用Windows环境
+![PP-Tracking GUI主界面](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
 
-主要包含两个步骤：
+![PP-Tracking行人追踪](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E8%A1%8C%E4%BA%BA%E8%BF%BD%E8%B8%AA.png)
+
+![PP-Tracking GUI车辆追踪](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E8%BD%A6%E8%BE%86%E8%BF%BD%E8%B8%AA.png)
+
+![PP-Tracking GUI多类别追踪](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E5%A4%9A%E7%B1%BB%E5%88%AB%E8%BF%BD%E8%B8%AA.png)
+
+![PP-Tracking行人追踪实操效果](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E8%A1%8C%E4%BA%BA%E8%BF%BD%E8%B8%AA%E5%AE%9E%E6%93%8D%E6%95%88%E6%9E%9C.png)
+
+## 三.项目配置：
+
+推荐使用Windows或Mac环境
+
+主要包含以下三个步骤：
 
 - 导入训练模型，修改模型名称
 - 安装必要的依赖库
 - 启动前端界面
 
-## 1. 下载预测模型
+### 1. 下载预测模型
 
 PP-Tracking 提供了覆盖多种场景的预测模型，用户可以根据自己的实际使用场景在[链接](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking/README.md#%E4%BA%8C%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D)中直接下载表格最后一列的预测部署模型
 
@@ -25,7 +37,7 @@ PP-Tracking 提供了覆盖多种场景的预测模型，用户可以根据自�
 模型导出放在`./output_inference`目录下
 
 
-## 2. 必要的依赖库安装
+### 2. 必要的依赖库安装
 
 ```
 pip install -r requirements.txt
@@ -54,7 +66,7 @@ openpyxl
 1. Windows环境下，需要手动下载安装[cython_bbox](https://pypi.org/project/pip/)，然后将setup.py中的找到steup.py, 修改`extra_compile_args=[’-Wno-cpp’]`，替换为`extra_compile_args = {'gcc': ['/Qstd=c99']}`, 然后运行`python setup.py build_ext install`
 2. numpy版本需要大于1.20
 
-## 3. 启动前端界面
+### 3. 启动前端界面
 
 执行`python main.py`启动前端界面
 
@@ -79,4 +91,9 @@ openpyxl
 说明：
 
 - 如果安装的PaddlePaddle不支持基于TensorRT进行预测，需要自行编译，详细可参考[预测库编译教程](https://paddleinference.paddlepaddle.org.cn/user_guides/source_compile.html)。
-- 建议使用windows环境进行运行
+- 更多配置细节可以查看提供的PP-Tracking_GUi项目环境配置教程.docx文件
+
+## 四.代码贡献：
+
+![PP-Tracking代码贡献](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E4%BB%A3%E7%A0%81%E8%B4%A1%E7%8C%AE.png)
+
