@@ -33,17 +33,14 @@ os.environ['PYTHON_EXE'] = sys.executable
 class status():
     def __init__(self):
         # self.handleCalc()
-        #正常情况下应该是先跳转到主页menu，现在主页还没完善好，因此先跳转到行人单目标检测
         self.id_num = 0
         self.handleCalc()
-        # note: 添加变量
         self.file_path = []  # 用于保存结果文件
         self.video_path = []  # 用于保存选择的视频路径
         self.final_time = 0
         self.txt_output_path = ''
         self.video_output_path = ''
         self.txt_statistic_output_path = ''
-        # self.is_enter = False
 
     def show_ui(self, location):
         loca="ui/"+location
@@ -86,7 +83,6 @@ class status():
             if self.time<0: self.time=0
             edit.setText(str(self.time))
         else:
-            # self.confi = float(float(self.confi) + float(one))
             self.confi = Decimal(str(self.confi)) + Decimal(str(one))
             self.confi = Decimal(self.confi).quantize(Decimal("0.00"))
             if self.confi > 1.0: self.confi = 1.0
@@ -135,7 +131,6 @@ class status():
         用来更新那个进度条的函数
         ！！！注意更新进度条的时候一定要先修改self.progressPos,
         self.progressPos是一个0到1的小数
-
         :param len:指的是总进度条的长度，是120
         :param progress: 指的是self.ui.label_progressBar,直接传这个参数就可以
         :param show_label:是self.ui.label_progressBar_num，直接传这个
@@ -342,7 +337,6 @@ class status():
         self.file_path = []
         self.video_path = []
         self.is_draw_line = ''
-        # 先设置shadow
         self.have_show_video=1
         self.help_set_shadow(0, 4, 0, QColor(221, 221, 221, 0.3 * 255)
                              , self.ui.label_3)
@@ -414,8 +408,6 @@ class status():
         """
         result = []
         result.append(self.lineEditConfi.text())
-        # result.append(self.ui.lineEdit_2.text())
-        # print(self.ui.lineEdit_2.text())
 
         if self.is_enter == False:
             self.is_enter = True
@@ -431,9 +423,7 @@ class status():
             self.init_base_ui_for_one_photo_changing_enter(self.not_enter_ui)
 
         self.lineEditConfi.setText("0.5")
-        # self.ui.lineEdit_2.setText(result[1])
 
-        # note:无法选择按钮暂时变灰
         self.ui.pushButton_2.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
         self.ui.pushButton_3.setStyleSheet(
@@ -446,10 +436,6 @@ class status():
         self.have_show_time = 0
         self.Display_Image(frame, self.ui.label_7)
 
-        # to do: 解决出入口界面的问题
-        # self.is_enter_surely = 1
-        print(self.is_enter_surely)
-
         self.load_video_controller()
         self.load_control_for_one_photo()
         return
@@ -459,9 +445,6 @@ class status():
         s = """QLineEdit{\nwidth: 80px;\nheight: 40px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\n\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #333333;\nline-height: 26px;\nfont-weight:bold;\n}"""
         self.lineEditConfi = MyLineEdit(self.ui.label_confi_tip, s
                                         , 0, 352, 930, 57, 42, self.ui)
-        # s = """QPushButton{\nwidth: 120px;\nheight: 40px;\nborder-radius: 4px;\nborder: 1px solid #4E4EF2;\nfont-weight:bold;\n\nfont-size: 16px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #4E4EF2;\nline-height: 24px;\n}\nQPushButton:hover{\nwidth: 120px;\nheight: 44px;\nbackground: rgba(255, 255, 255, 204);\nborder-radius: 4px;\nborder: 1px solid rgba(78, 78, 242, 204);\n\nfont-weight:bold;\nfont-size: 16px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: rgba(78, 78, 242, 204);\nline-height: 24px;\n}"""
-        # self.output_txt = MyPushButton(self.ui.label_txt_tip, s
-        #                                , "导出文件", 1507.5, 290, 126, 44, self.ui)
 
         self.help_set_shadow(0, 0, 50, QColor(0, 0, 0, 0.06 * 255)
                              , self.ui.widget_2)
@@ -474,7 +457,6 @@ class status():
 
         self.ui.pushButton_13.clicked.connect(self.come_back)
 
-        # note:无法选择按钮暂时变灰
         self.ui.pushButton_2.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
         self.ui.pushButton_3.setStyleSheet(
@@ -506,14 +488,10 @@ class status():
         s = """QLineEdit{\nwidth: 80px;\nheight: 40px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\n\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #333333;\nline-height: 26px;\nfont-weight:bold;\n}"""
         self.lineEditConfi = MyLineEdit(self.ui.label_confi_tip, s
                                         , 0, 352, 930, 57, 42, self.ui)
-        # s = """QPushButton{\nwidth: 126px;\nheight: 44px;\nbackground: #FFFFFF;\nborder-radius: 4px;\nborder: 1px solid #4E4EF2;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #4E4EF2;\nline-height: 26px;\nfont-weight:bold;\n}"""
-        # self.output_txt = MyPushButton(self.ui.label_txt_tip, s
-        #                                , "导出文件", 1507.5, 290, 126, 44, self.ui)
         self.help_set_shadow(0, 4, 0, QColor(221, 221, 221, 0.3 * 255)
                              , self.ui.label_3)
         self.help_set_shadow(0, 0, 50, QColor(221, 221, 221, 0.3 * 255)
                              , self.ui.widget_2, self.ui.widget_3)
-        # note:无法选择按钮暂时变灰
         self.ui.pushButton_2.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
         self.ui.pushButton_3.setStyleSheet(
@@ -560,9 +538,6 @@ class status():
     def load_control_for_one_mult_photo(self):
         self.help_set_spinBox(self.lineEditConfi, self.ui.pushButton_7
                               , self.ui.pushButton_11, 0.01)
-
-        # self.help_set_spinBox(self.ui.lineEdit_2, self.ui.pushButton_5
-        #                       , self.ui.pushButton_6, 1)
         return
 
     def load_video(self, control_hide, control_label):
@@ -599,8 +574,7 @@ class status():
         file_temp_split_path = self.file_path[0].split('.')
         self.file_name = file_temp_split_path[0]
 
-        # note: 修改使得支持多视频格式
-        # self.file_path[0] = 'output/' + file_temp_split_path[0].split('/')[-1] + '.mp4'
+        # note: 支持多视频格式
         self.file_path[0] = 'output/' + self.file_path[0].split('/')[-1]
 
         # 结果文件默认输出路径
@@ -650,9 +624,6 @@ class status():
         file_name_test_start = file_name_test[len(file_name_test) - 1]
         self.file_name = file_name_test_start + '.mp4'
         self.end_file_name = self.file_name
-
-        # self.ui.label_23.setFixedSize \
-        #     (self.ui.label_23.width(), self.ui.label_23.height())
 
         # note：是否绘制轨迹
         if self.ui.checkBox.checkState() == Qt.Checked:
@@ -773,9 +744,6 @@ class status():
         self.file_name = file_name_test_start + '.mp4'
         self.end_file_name = self.file_name
 
-        # self.ui.label_23.setFixedSize \
-        #     (self.ui.label_23.width(), self.ui.label_23.height())
-
         # note：是否绘制轨迹
         if self.ui.checkBox.checkState() == Qt.Checked:
             self.is_tracking = '--draw_center_traj'
@@ -821,10 +789,6 @@ class status():
         self.ui.label_7.move(60, 108)
         self.ui.label_7.setPixmap(pic)
         self.ui.label_7.setScaledContents(True)
-
-        # self.synthesis_vide(val, self.file_name)
-        # self.ui.label_17.setText("运行时间" + str((endtime_count - starttime_count)) /
-        #                          +"运行FPS" + str(round(self.cap1.get(cv2.CAP_PROP_FPS))))
 
         # note：运行结束重新把按钮由灰变蓝
         self.ui.pushButton_2.setStyleSheet(
@@ -947,7 +911,6 @@ class status():
         plt.margins(0)
         plt.subplots_adjust(bottom=0.10)
         plt.savefig('output/people_image.png')
-        # plt.show()
 
         # 当前的人数计数
         self.current_count = current_count_list_y[len(current_count_list_y) - 1]
@@ -1011,18 +974,12 @@ class status():
             if max < standard:
                 max = standard
 
-            # plt.xlabel('time(/s)', fontsize=14, color='black')
-            # plt.ylabel('pedestrian volume', fontsize=14, color='black')
             # 限制上下限
             xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
-            # 修改纵坐标的刻度
-            # yticks(np.linspace(int(min) - 2, int(max) + 2, int(max - min + 5), endpoint=True))
             plt.ylim(int(min) - 1, int(max) + 1)
             plt.legend()  # 让图例生效
             plt.margins(0)
-            # plt.subplots_adjust(bottom=0.10)
             plt.savefig('output/people_image.png')
-            # plt.show()
             pic = QPixmap('output/people_image.png')
 
         elif self.page_id == 2 or self.page_id == 5:
@@ -1047,31 +1004,19 @@ class status():
             if max < standard:
                 max = standard
 
-            # plt.xlabel('time(/s)', fontsize=14, color='black')
-            # plt.ylabel('car volume', fontsize=14, color='black')
             xticks(np.linspace(0, current_count_list_x[-1], len(current_count_list_x), endpoint=True))
-            # 修改纵坐标的刻度
-            # yticks(np.linspace(int(min) - 2, int(max) + 2, int(max - min + 5), endpoint=True))
             plt.ylim(int(min) - 1, int(max) + 1)
             plt.legend()  # 让图例生效
             plt.margins(0)
-            # plt.subplots_adjust(bottom=0.10)
             plt.savefig('output/car_image.png')
-            # plt.show()
             pic = QPixmap('output/car_image.png')
 
         self.ui.label_33.setPixmap(pic)
         self.ui.label_33.setScaledContents(True)
-        # 当前的人数计数
-        # self.current_count = current_count_list_y[len(current_count_list_y) - 1]
         print(current_count_list_y)
         totalcount = list[-1].split(',')[1].split(' ')[-1]
         print('total: ' + totalcount)
         self.ui.label_30.setText(str(totalcount))
-        # f.close()
-        # print(self.cap1[0])
-        # frames_num = self.cap1.get(7)
-        # fps = int(round(self.cap1.get(cv2.CAP_PROP_FPS)))
 
     def synthesis_vide(self, val, video_name):
         video_name_list = video_name.split('.')
@@ -1137,7 +1082,6 @@ class status():
             self.timer_camera2.stop()
             if self.cap2 is not None:
                 self.cap2.release()
-        # 可以让视频被清除掉，或者一些其他的功能
 
     def video_start(self):
         print('视频开始播放!')
@@ -1199,22 +1143,12 @@ class status():
         if self.page_id == 4 or self.page_id == 6:
             QMessageBox.information(self.ui, '提示', '跨境头功能尚在完善中，敬请期待!')
             return
-
-        # note：运行后显示运行中
-        # pic = QPixmap('source/second/loading.png')
-        # self.ui.label_7.setPixmap(pic)
-        # self.ui.label_7.setScaledContents(True)
-
-        # note: 后续可尝试添加显示动态gif
+        
         self.movie = QMovie('source/second/pp.gif')
         self.ui.label_7.setMovie(self.movie)
         self.ui.label_7.setFixedSize(320, 320)
         self.ui.label_7.move(350, 195)
         self.movie.start()
-
-        # self.timer_camera1.stop()
-        # if self.have_show_video == 2:
-        #     self.timer_camera2.stop()
 
         self.ui.pushButton.setStyleSheet(
             "QPushButton{\nwidth: 120px;\nheight: 44px;\nbackground: #F5F5F5;\nborder-radius: 4px;\nborder: 1px solid #CCCCCC;\nfont-size: 18px;\nfont-family: AlibabaPuHuiTi_2_65_Medium;\ncolor: #B8B8B8;\nline-height: 26px;\nfont-weight:bold\n}")
@@ -1255,15 +1189,11 @@ class status():
         if self.have_show_video==1 or self.have_show_video==2:
             if hasattr(self,"cap1") == False:return
             if self.timer_camera1 == []:return
-            # note:添加空判定
             if self.timer_camera1 is None:return
             self.timer_camera1.stop()
-            # note:暂时注释掉改行
-            # self.cap1.release()
             self.timer_camera1=None
             self.cap1=None
         if self.have_show_video==2:
-            # note:添加空判定
             if self.timer_camera2 is None: return
             self.timer_camera2.stop()
             self.cap2.release()
@@ -1276,9 +1206,7 @@ class status():
         ！！！！！！！！！！！！！！！！！！这里一定要看
         最关键的是这个函数
         参数image就是要展示在页面里的视频
-
         除此之外，对各种展示信息的更新，直接在这个函数里对相应控件进行更新就可以
-
         然后所有需要手动设置的参数，阙值和时间长度，只要在页面上设置好，这里就能知道
         阙值：self.confi
         时间: self.time
@@ -1421,6 +1349,3 @@ if __name__ == '__main__':
     statu = status()
     statu.ui.show()
     app.exec_()
-
-
-
