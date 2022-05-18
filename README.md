@@ -93,7 +93,7 @@ openpyxl
 - 如果安装的PaddlePaddle不支持基于TensorRT进行预测，需要自行编译，详细可参考[预测库编译教程](https://paddleinference.paddlepaddle.org.cn/user_guides/source_compile.html)。
 - 更多配置细节可以查看提供的PP-Tracking_GUi项目环境配置教程.docx文件
 
-## 四.贡献贡献：
+## 四.代码贡献：
 
 ![PP-Tracking代码贡献](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E4%BB%A3%E7%A0%81%E8%B4%A1%E7%8C%AE.png)
 
