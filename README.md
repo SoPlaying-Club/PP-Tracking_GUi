@@ -2,19 +2,19 @@
 
 ## 一.项目介绍
 
-本项目是基于飞桨开源的实时目标跟踪系统[PP-Tracking](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking)开发的GUI可视化界面。
+技术栈：PP-Tracking + Pyside2
 
-用户可通过GUI界面进行调整阈值、模型预测，视频结果输出等，方便了用户直接体验功能。当前覆盖单镜头的全部功能，如行人跟踪，车辆跟踪，流量统计等，适用于智慧交通、安防监控等场景。
+本项目是基于飞桨开源的实时目标跟踪系统[PP-Tracking](https://github.com/PaddlePaddle/PaddleDetection/blob/develop/deploy/pptracking)开发的GUI可视化界面。用户可通过GUI界面进行阈值调整、模型预测，视频结果输出等，方便了用户直接体验功能。当前覆盖单镜头的全部功能，如行人跟踪，车辆跟踪，流量统计等，适用于智慧交通、安防监控等场景。
 
 ## 二.项目界面演示：
 
-![PP-Tracking GUI主界面](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
+![PP-Tracking GUI主界面1](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E4%B8%BB%E7%95%8C%E9%9D%A21.png)
 
-![PP-Tracking行人追踪](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E8%A1%8C%E4%BA%BA%E8%BF%BD%E8%B8%AA.png)
+![PP-Tracking行人追踪1](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E8%A1%8C%E4%BA%BA%E8%BF%BD%E8%B8%AA1.png)
 
-![PP-Tracking GUI车辆追踪](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E8%BD%A6%E8%BE%86%E8%BF%BD%E8%B8%AA.png)
+![PP-Tracking GUI车辆追踪1](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E8%BD%A6%E8%BE%86%E8%BF%BD%E8%B8%AA1.png)
 
-![PP-Tracking GUI多类别追踪](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E5%A4%9A%E7%B1%BB%E5%88%AB%E8%BF%BD%E8%B8%AA.png)
+![PP-Tracking GUI多类别追踪1](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%20GUI%E5%A4%9A%E7%B1%BB%E5%88%AB%E8%BF%BD%E8%B8%AA1.png)
 
 ![PP-Tracking行人追踪实操效果](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E8%A1%8C%E4%BA%BA%E8%BF%BD%E8%B8%AA%E5%AE%9E%E6%93%8D%E6%95%88%E6%9E%9C.png)
 
@@ -93,7 +93,7 @@ openpyxl
 - 如果安装的PaddlePaddle不支持基于TensorRT进行预测，需要自行编译，详细可参考[预测库编译教程](https://paddleinference.paddlepaddle.org.cn/user_guides/source_compile.html)。
 - 更多配置细节可以查看提供的PP-Tracking_GUi项目环境配置教程.docx文件
 
-## 四.代码贡献：
+## 四.贡献贡献：
 
 ![PP-Tracking代码贡献](https://gitee.com/hchhtc123/picture/raw/master/typora/PP-Tracking%E4%BB%A3%E7%A0%81%E8%B4%A1%E7%8C%AE.png)
 
